@@ -1,0 +1,2 @@
+import Records from '@/components/console/Records';
+export default function Page(){return <Records title="Internal team" description="Invite an existing, verified Firebase identity. These roles grant console access only. Customer CMS roles are separate." endpoint="/api/admin/admins" fields={[{name:'username',label:'Staff name'},{name:'email',label:'Registered email',type:'email'},{name:'role',label:'Console role',options:['support','billing_manager','teacher_manager','review_moderator','content_manager','analytics_viewer','digital_marketer','super_admin']}]}/>;}

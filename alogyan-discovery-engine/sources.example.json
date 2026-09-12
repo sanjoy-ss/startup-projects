@@ -1,0 +1,13 @@
+[
+  {
+    "id": "replace-with-approved-official-source",
+    "provider": "official-website",
+    "url": "https://example.org/",
+    "entityType": "private_school",
+    "location": {"city": "Agartala", "state": "Tripura", "country": "IN"},
+    "intervalDays": 7,
+    "trust": 70,
+    "authorized": false,
+    "enabled": false
+  }
+]

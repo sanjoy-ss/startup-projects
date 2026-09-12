@@ -1,0 +1,17 @@
+scrapling[fetchers]>=0.4.15
+motor>=3.7.0
+pydantic>=2.10.0
+pydantic-settings>=2.7.0
+rapidfuzz>=3.14.6
+phonenumbers>=9.0.39
+tldextract>=5.3.2
+unidecode>=1.4.0
+trafilatura>=2.0.0
+beautifulsoup4>=4.13.0
+instructor>=1.7.0
+httpx>=0.28.1
+tenacity>=9.0.0
+python-dotenv>=1.2.3
+certifi>=2026.7.22
+pytest>=8.0.0
+pytest-asyncio>=0.24.0

@@ -1,0 +1,29 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+
+    {
+      "name": "Alogyan: Debug",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm dev",
+      "cwd": "${workspaceFolder}/alogyan-1"
+    },
+    {
+      "name": "CMS-alogyan: Debug",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm dev -- -p 3001",
+      "cwd": "${workspaceFolder}/alogyan-teachers-cms"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Debug All Projects",
+      "configurations": [
+        "Alogyan: Debug",
+        "CMS-alogyan: Debug"
+      ]
+    }
+  ]
+}

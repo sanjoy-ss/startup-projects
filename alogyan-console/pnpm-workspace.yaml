@@ -1,0 +1,6 @@
+allowBuilds:
+  '@apollo/protobufjs': true
+  '@firebase/util': true
+  protobufjs: true
+  sharp: true
+  unrs-resolver: true

@@ -1,0 +1,2 @@
+import Records from '@/components/console/Records';
+export default function Page(){return <Records title="Customers" description="Provision an institute after its owner registers a Firebase account. Existing institute IDs are preserved. Suspending an institute blocks CMS access." endpoint="/api/admin/customers" fields={[{name:'name',label:'Institute name'},{name:'email',label:'Registered owner email',type:'email'}]}/>;}

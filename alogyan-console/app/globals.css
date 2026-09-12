@@ -1,0 +1,600 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ----------------------------
+   Alogyan Design System
+   Font: Poppins (headings) + Inter (body)
+   Primary: #C91F26 (Alogyan Red)
+----------------------------- */
+:root {
+  --radius: 16px;
+
+  /* Fonts */
+  --font-heading: 'Poppins', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  /* Brand Colors */
+  --color-primary: #C91F26;
+  --color-primary-hover: #A81920;
+  --color-background: #FFFFFF;
+  --color-surface: #F9FAFB;
+
+  /* Text Colors */
+  --color-text-primary: #111827;
+  --color-text-secondary: #374151;
+  --color-muted: #6B7280;
+
+  /* Accent Colors */
+  --color-accent-blue: #2563EB;
+  --color-accent-blue-hover: #1D4ED8;
+  --color-success: #16A34A;
+  --color-success-hover: #15803D;
+}
+
+@layer base {
+  :root {
+    /* Alogyan Brand - Red Primary */
+    --background: 0 0% 100%;
+    --foreground: 220 13% 9%;
+    /* #111827 */
+    --card: 0 0% 100%;
+    --card-foreground: 220 13% 9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 13% 9%;
+    --primary: 356 76% 45%;
+    /* #C91F26 Alogyan Red */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 20% 98%;
+    /* #F9FAFB */
+    --secondary-foreground: 220 13% 9%;
+    --muted: 210 20% 98%;
+    --muted-foreground: 215 14% 46%;
+    /* #6B7280 */
+    --accent: 221 83% 53%;
+    /* #2563EB Tech Blue */
+    --accent-foreground: 0 0% 100%;
+    --destructive: 356 76% 45%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 356 76% 45%;
+    /* Brand red for focus rings */
+    --chart-1: 356 76% 45%;
+    /* Brand red */
+    --chart-2: 221 83% 53%;
+    /* Tech blue */
+    --chart-3: 142 71% 37%;
+    /* Success green */
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+  }
+
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+
+  * {
+    @apply border-border;
+  }
+}
+
+/* ----------------------------
+   Prevent Text Selection Issues
+----------------------------- */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+/* Prevent cursor blinking on clickable elements */
+button,
+a,
+[role="button"],
+[onclick] {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Prevent caret/cursor on all non-input, non-editable elements */
+div:not([contenteditable="true"]):not([tabindex]),
+span:not([contenteditable="true"]):not([tabindex]),
+section:not([contenteditable="true"]):not([tabindex]),
+article:not([contenteditable="true"]):not([tabindex]) {
+  caret-color: transparent;
+}
+
+/* Only allow caret and selection on real inputs and editable fields */
+input,
+textarea,
+[contenteditable="true"] {
+  caret-color: auto;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Allow text selection only for actual text content */
+p,
+span:not([role="button"]),
+div:not([role="button"]):not([onclick]),
+article,
+section {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Specifically prevent selection on interactive elements */
+.cursor-pointer,
+[class*="hover:"],
+[class*="cursor-"] {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Prevent selection on cards and dashboard elements */
+[class*="rounded-2xl"],
+[class*="shadow-"],
+[class*="hover:shadow"],
+[class*="hover:scale"],
+[class*="transition-"] {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Prevent selection on all divs with background gradients */
+[class*="bg-gradient"],
+[class*="bg-brand"] {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* ----------------------------
+   Gradient Text Support (Mobile Fix)
+----------------------------- */
+
+/* Improved gradient text support for all devices */
+.gradient-text {
+  background: linear-gradient(135deg, #FF5757 0%, #E84855 35%, #B53471 65%, #4169E1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+
+  /* Ensure proper rendering on mobile */
+  filter: drop-shadow(0 0 0 rgba(255, 87, 87, 0.3));
+  background-size: 200% 200%;
+  animation: gradient-motion 3s ease infinite;
+}
+
+/* Fallback for mobile devices that don't support bg-clip-text well */
+@supports not (-webkit-background-clip: text) {
+  .gradient-text {
+    color: #FF5757;
+    background: none;
+    -webkit-text-fill-color: unset;
+  }
+}
+
+@keyframes gradient-motion {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Mobile-optimized gradient text - uses solid color fallback */
+.gradient-text-mobile {
+  /* Desktop: show gradient */
+  background: linear-gradient(135deg, #FF5757 0%, #E84855 35%, #B53471 65%, #4169E1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Mobile: use solid fallback color */
+@media (max-width: 768px) {
+  .gradient-text-mobile {
+    background: none;
+    color: #FF5757;
+    -webkit-text-fill-color: unset;
+  }
+}
+
+/* Enhanced gradient text with better mobile support */
+.text-gradient {
+  background: linear-gradient(135deg, #FF5757 0%, #E84855 35%, #B53471 65%, #4169E1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  /* Ensure it renders properly */
+  display: inline-block;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ----------------------------
+   Reusable Global Components
+----------------------------- */
+
+.container {
+  @apply max-w-[1080px] mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.card {
+  @apply rounded-2xl shadow-sm border bg-white border-gray-100;
+}
+
+.btn {
+  @apply inline-flex items-center justify-center rounded-xl px-4 py-2 font-medium border border-gray-200 hover:border-gray-300 transition;
+}
+
+.badge {
+  @apply inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs text-gray-700;
+}
+
+/* ----------------------------
+   Animations
+----------------------------- */
+@keyframes blink {
+
+  0%,
+  50%,
+  100% {
+    opacity: 1;
+  }
+
+  25%,
+  75% {
+    opacity: 0;
+  }
+}
+
+.animate-pulse {
+  animation: blink 1s infinite;
+}
+
+/* ---- Page Loader Animations ---- */
+@keyframes gradient-shift {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient-shift {
+  background-size: 200% 200%;
+  animation: gradient-shift 8s ease infinite;
+}
+
+/* --- Floating Animations --- */
+@keyframes float-1 {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes float-2 {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes float-3 {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes float-4 {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-11px);
+  }
+}
+
+@keyframes float-5 {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-9px);
+  }
+}
+
+/* keep your existing float animations – they are correct */
+.animate-float-1 {
+  animation: float-1 8s ease-in-out infinite;
+}
+
+.animate-float-2 {
+  animation: float-2 10s ease-in-out infinite;
+}
+
+.animate-float-3 {
+  animation: float-3 7s ease-in-out infinite;
+}
+
+.animate-float-4 {
+  animation: float-4 9s ease-in-out infinite;
+}
+
+.animate-float-5 {
+  animation: float-5 11s ease-in-out infinite;
+}
+
+/* ---- Orbit ---- */
+@keyframes orbit {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes orbit-reverse {
+  0% {
+    transform: rotate(360deg);
+  }
+
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.animate-orbit {
+  animation: orbit 3s linear infinite;
+}
+
+.animate-orbit-reverse {
+  animation: orbit-reverse 3s linear infinite;
+}
+
+/* ---- Pulse Rings ---- */
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
+
+@keyframes pulse-ring-delayed {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 2s ease-in-out infinite;
+}
+
+.animate-pulse-ring-delayed {
+  animation: pulse-ring-delayed 2s ease-in-out infinite 0.5s;
+}
+
+/* ---- Logo Entrance ---- */
+@keyframes logo-entrance {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-logo-entrance {
+  animation: logo-entrance 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* ---- Glow, Shimmer, etc. ---- */
+@keyframes glow-pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.animate-shimmer {
+  background-size: 200% auto;
+  animation: shimmer 3s linear infinite;
+}
+
+/* ---- Line Expand ---- */
+@keyframes line-expand {
+  0% {
+    width: 0;
+  }
+
+  100% {
+    width: 100%;
+  }
+}
+
+.animate-line-expand {
+  animation: line-expand 1.5s ease-in-out forwards;
+}
+
+/* ---- Fade In Up ---- */
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out forwards 0.4s;
+  opacity: 0;
+}
+
+/* ---- Progress ---- */
+@keyframes progress {
+
+  0%,
+  100% {
+    width: 0;
+  }
+
+  50% {
+    width: 100%;
+  }
+}
+
+.animate-progress {
+  animation: progress 1.5s ease-in-out infinite;
+}
+
+/* ---- Gentle Bounce ---- */
+@keyframes gentle-bounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-gentle-bounce {
+  animation: gentle-bounce 1.5s ease-in-out infinite;
+}
+
+/* ---- Animated Modern Gradient ---- */
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  background: linear-gradient(135deg, #f0f4f8, #d9e8f0, #e8d5f2, #f0e8f8, #d9e8f0, #f0f4f8);
+  background-size: 400% 400%;
+  animation: gradient-shift 20s ease-in-out infinite;
+}
+
+.success-typing-gradient {
+  background: linear-gradient(135deg, #ff5757 0%, #e84855 35%, #b53471 65%, #4169e1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

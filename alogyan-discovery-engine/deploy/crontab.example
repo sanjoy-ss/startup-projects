@@ -1,0 +1,5 @@
+# Prefer deploy/install.sh, which preserves other jobs and detects the host timezone.
+# Asia/Kolkata server: Tuesday/Saturday 01:00 IST
+0 1 * * 2,6 /opt/alogyan-discovery-engine/.venv/bin/python /opt/alogyan-discovery-engine/deploy/run_weekly.py
+# UTC server equivalent (use instead of, not alongside, the entry above):
+# 30 19 * * 1,5 /opt/alogyan-discovery-engine/.venv/bin/python /opt/alogyan-discovery-engine/deploy/run_weekly.py
