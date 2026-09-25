@@ -1,13 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/constants/colors.dart';
 import '../../../shared/widgets/alogyan_card.dart';
 import '../../../shared/widgets/status_badge.dart';
 import '../../attendance/screens/quick_attendance_screen.dart';
 import '../../fees/screens/quick_fee_screen.dart';
+import '../../navigation/controllers/navigation_controller.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
+
+  void _navigateToTabOrScreen(BuildContext context, int tabIndex, Widget screen) {
+    if (Get.isRegistered<NavigationController>()) {
+      Get.find<NavigationController>().changeTab(tabIndex);
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => screen),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,12 +96,7 @@ class DashboardScreen extends StatelessWidget {
                     ),
                     icon: const Icon(LucideIcons.userCheck, size: 18),
                     label: const Text('Take Attendance', style: TextStyle(fontSize: 13)),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const QuickAttendanceScreen()),
-                      );
-                    },
+                    onPressed: () => _navigateToTabOrScreen(context, 1, const QuickAttendanceScreen()),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -101,12 +109,7 @@ class DashboardScreen extends StatelessWidget {
                     ),
                     icon: const Icon(LucideIcons.indianRupee, size: 18),
                     label: const Text('Collect Fee', style: TextStyle(fontSize: 13)),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const QuickFeeScreen()),
-                      );
-                    },
+                    onPressed: () => _navigateToTabOrScreen(context, 2, const QuickFeeScreen()),
                   ),
                 ),
               ],
