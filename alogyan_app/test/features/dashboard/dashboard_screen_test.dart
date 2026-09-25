@@ -8,7 +8,9 @@ void main() {
     Get.testMode = true;
     await tester.pumpWidget(
       const MaterialApp(
-        home: DashboardScreen(),
+        home: Scaffold(
+          body: DashboardScreen(),
+        ),
       ),
     );
 

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/sync/sync_worker.dart';
+import '../../../shared/widgets/alogyan_app_bar.dart';
 import '../../../shared/widgets/offline_banner.dart';
 import '../../attendance/screens/quick_attendance_screen.dart';
 import '../../dashboard/screens/dashboard_screen.dart';
@@ -26,27 +27,28 @@ class MainNavigationShell extends StatelessWidget {
     final syncWorker = Get.isRegistered<SyncWorker>() ? Get.find<SyncWorker>() : null;
 
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            if (syncWorker != null)
-              Obx(() => OfflineBanner(
-                    pendingCount: syncWorker.pendingSyncCount.value,
-                    onSyncNow: syncWorker.drainQueue,
-                  )),
-            Expanded(
-              child: Obx(() => IndexedStack(
-                    index: navController.currentIndex.value,
-                    children: _pages,
-                  )),
-            ),
-          ],
-        ),
+      backgroundColor: AlogyanColors.background,
+      appBar: const AlogyanAppBar(),
+      body: Column(
+        children: [
+          if (syncWorker != null)
+            Obx(() => OfflineBanner(
+                  pendingCount: syncWorker.pendingSyncCount.value,
+                  onSyncNow: syncWorker.drainQueue,
+                )),
+          Expanded(
+            child: Obx(() => IndexedStack(
+                  index: navController.currentIndex.value,
+                  children: _pages,
+                )),
+          ),
+        ],
       ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
+          color: AlogyanColors.surface,
           border: Border(
-            top: BorderSide(color: AlogyanColors.border, width: 1),
+            top: BorderSide(color: AlogyanColors.border, width: 1.0),
           ),
         ),
         child: Obx(
@@ -57,24 +59,28 @@ class MainNavigationShell extends StatelessWidget {
             backgroundColor: AlogyanColors.surface,
             selectedItemColor: AlogyanColors.primary,
             unselectedItemColor: AlogyanColors.textSecondary,
-            selectedFontSize: 12,
-            unselectedFontSize: 12,
+            selectedFontSize: 11,
+            unselectedFontSize: 11,
             elevation: 0,
             items: const [
               BottomNavigationBarItem(
-                icon: Icon(LucideIcons.layoutDashboard, size: 22),
+                icon: Icon(LucideIcons.layoutDashboard, size: 20),
+                activeIcon: Icon(LucideIcons.layoutDashboard, size: 20, color: AlogyanColors.primary),
                 label: 'Dashboard',
               ),
               BottomNavigationBarItem(
-                icon: Icon(LucideIcons.userCheck, size: 22),
+                icon: Icon(LucideIcons.userCheck, size: 20),
+                activeIcon: Icon(LucideIcons.userCheck, size: 20, color: AlogyanColors.primary),
                 label: 'Attendance',
               ),
               BottomNavigationBarItem(
-                icon: Icon(LucideIcons.indianRupee, size: 22),
+                icon: Icon(LucideIcons.indianRupee, size: 20),
+                activeIcon: Icon(LucideIcons.indianRupee, size: 20, color: AlogyanColors.primary),
                 label: 'Fees',
               ),
               BottomNavigationBarItem(
-                icon: Icon(LucideIcons.users, size: 22),
+                icon: Icon(LucideIcons.users, size: 20),
+                activeIcon: Icon(LucideIcons.users, size: 20, color: AlogyanColors.primary),
                 label: 'Students',
               ),
             ],
