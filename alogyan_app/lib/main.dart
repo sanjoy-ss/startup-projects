@@ -5,6 +5,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'app.dart';
 import 'core/api/api_client.dart';
 import 'core/cache/cache_service.dart';
+import 'core/config/app_config.dart';
 import 'core/config/firebase_options.dart';
 import 'core/sync/sync_service.dart';
 import 'core/sync/sync_worker.dart';
@@ -34,9 +35,10 @@ void main() async {
   final syncService = SyncService(cacheService.syncBox);
   Get.put(syncService);
 
+  // Uses local Next.js CMS dev URL or direct Firestore sync mode
   final apiClient = ApiClient(
-    baseUrl: 'https://api.alogyan.com',
-    tenantId: 'alogyan_academy',
+    baseUrl: AppConfig.devApiBaseUrl,
+    tenantId: AppConfig.defaultTenantId,
   );
   Get.put(apiClient);
 

@@ -4,7 +4,9 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../api/api_client.dart';
+import '../config/app_config.dart';
 import 'sync_service.dart';
 
 class SyncWorker extends GetxService {
@@ -65,8 +67,26 @@ class SyncWorker extends GetxService {
         }
 
         try {
-          if (apiClient != null) {
-            // Send mutation with idempotency header
+          if (AppConfig.useFirestoreDirect) {
+            // Direct Cloud Firestore Synchronization (FlutterFire)
+            final firestore = FirebaseFirestore.instance;
+            if (action.type == 'MARK_ATTENDANCE') {
+              final batchId = action.payload['batchId'] ?? 'class_10_physics';
+              final date = action.payload['date'] ?? DateTime.now().toIso8601String().substring(0, 10);
+              await firestore.collection('attendance').doc('${batchId}_$date').set({
+                'batchId': batchId,
+                'date': date,
+                'records': action.payload['records'],
+                'syncedAt': FieldValue.serverTimestamp(),
+              }, SetOptions(merge: true));
+            } else if (action.type == 'COLLECT_FEE') {
+              await firestore.collection('fees').doc(action.id).set({
+                ...action.payload,
+                'syncedAt': FieldValue.serverTimestamp(),
+              }, SetOptions(merge: true));
+            }
+          } else if (apiClient != null) {
+            // Send mutation with idempotency header to REST API
             await apiClient!.dio.request(
               action.endpoint,
               data: action.payload,
