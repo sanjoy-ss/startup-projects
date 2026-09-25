@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/constants/colors.dart';
+import '../../../core/sync/sync_worker.dart';
+import '../../../shared/widgets/offline_banner.dart';
 import '../../attendance/screens/quick_attendance_screen.dart';
 import '../../dashboard/screens/dashboard_screen.dart';
 import '../../fees/screens/quick_fee_screen.dart';
@@ -21,12 +23,26 @@ class MainNavigationShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final navController = Get.put(NavigationController());
+    final syncWorker = Get.isRegistered<SyncWorker>() ? Get.find<SyncWorker>() : null;
 
     return Scaffold(
-      body: Obx(() => IndexedStack(
-            index: navController.currentIndex.value,
-            children: _pages,
-          )),
+      body: SafeArea(
+        child: Column(
+          children: [
+            if (syncWorker != null)
+              Obx(() => OfflineBanner(
+                    pendingCount: syncWorker.pendingSyncCount.value,
+                    onSyncNow: syncWorker.drainQueue,
+                  )),
+            Expanded(
+              child: Obx(() => IndexedStack(
+                    index: navController.currentIndex.value,
+                    children: _pages,
+                  )),
+            ),
+          ],
+        ),
+      ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           border: Border(

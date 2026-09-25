@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../data/repositories/student_repository.dart';
 
 class StudentItem {
   final String id;
@@ -18,15 +19,29 @@ class StudentItem {
 }
 
 class StudentsController extends GetxController {
+  final StudentRepository? repository;
   final RxString searchQuery = ''.obs;
+  final RxList<StudentItem> allStudents = <StudentItem>[].obs;
 
-  final RxList<StudentItem> allStudents = <StudentItem>[
-    StudentItem(id: '1', name: 'Aarav Sharma', batch: 'Class 10 Physics', phone: '+919876543210', dueAmount: 0),
-    StudentItem(id: '2', name: 'Diya Sen', batch: 'Class 10 Physics', phone: '+919876543211', dueAmount: 2000),
-    StudentItem(id: '3', name: 'Ishaan Roy', batch: 'Class 12 Maths', phone: '+919876543212', dueAmount: 3500),
-    StudentItem(id: '4', name: 'Meera Patel', batch: 'Class 10 Physics', phone: '+919876543213', dueAmount: 0),
-    StudentItem(id: '5', name: 'Rohan Das', batch: 'Class 12 Maths', phone: '+919876543214', dueAmount: 2000),
-  ].obs;
+  StudentsController({this.repository}) {
+    allStudents.assignAll([
+      StudentItem(id: '1', name: 'Aarav Sharma', batch: 'Class 10 Physics', phone: '+919876543210', dueAmount: 0),
+      StudentItem(id: '2', name: 'Diya Sen', batch: 'Class 10 Physics', phone: '+919876543211', dueAmount: 2000),
+      StudentItem(id: '3', name: 'Ishaan Roy', batch: 'Class 12 Maths', phone: '+919876543212', dueAmount: 3500),
+      StudentItem(id: '4', name: 'Meera Patel', batch: 'Class 10 Physics', phone: '+919876543213', dueAmount: 0),
+      StudentItem(id: '5', name: 'Rohan Das', batch: 'Class 12 Maths', phone: '+919876543214', dueAmount: 2000),
+    ]);
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+    if (repository != null) {
+      allStudents.bindStream(repository!.streamStudents());
+    } else if (Get.isRegistered<StudentRepository>()) {
+      allStudents.bindStream(Get.find<StudentRepository>().streamStudents());
+    }
+  }
 
   List<StudentItem> get filteredStudents {
     final q = searchQuery.value.trim().toLowerCase();
