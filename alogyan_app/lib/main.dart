@@ -10,7 +10,10 @@ import 'core/config/firebase_options.dart';
 import 'core/sync/sync_service.dart';
 import 'core/sync/sync_worker.dart';
 import 'features/attendance/data/repositories/attendance_repository.dart';
+import 'features/auth/controllers/auth_controller.dart';
+import 'features/auth/data/auth_repository.dart';
 import 'features/fees/data/repositories/fee_repository.dart';
+import 'features/onboarding/controllers/onboarding_controller.dart';
 import 'features/students/data/repositories/student_repository.dart';
 
 void main() async {
@@ -30,6 +33,7 @@ void main() async {
   final cacheService = CacheService();
   await cacheService.init();
   Get.put(cacheService);
+  Get.put(OnboardingController(cacheService: cacheService));
 
   // 3. Initialize Offline Sync Queue & API Client
   final syncService = SyncService(cacheService.syncBox);
@@ -59,6 +63,11 @@ void main() async {
     syncService: syncService,
     syncWorker: syncWorker,
   ));
+
+  // 6. Register Authentication Layer
+  final authRepository = AuthRepository(cacheService: cacheService);
+  Get.put(authRepository);
+  Get.put(AuthController(authRepository: authRepository));
 
   runApp(const AlogyanApp());
 }

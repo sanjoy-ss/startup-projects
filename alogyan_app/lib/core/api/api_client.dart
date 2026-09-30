@@ -2,8 +2,8 @@ import 'package:dio/dio.dart';
 
 class ApiClient {
   final Dio dio;
-  final String tenantId;
-  final String? branchId;
+  String tenantId;
+  String? branchId;
 
   ApiClient({
     required String baseUrl,
@@ -28,5 +28,12 @@ class ApiClient {
         },
       ),
     );
+  }
+
+  void updateTenantId(String newTenantId, [String? newBranchId]) {
+    tenantId = newTenantId;
+    if (newBranchId != null) {
+      branchId = newBranchId;
+    }
   }
 }

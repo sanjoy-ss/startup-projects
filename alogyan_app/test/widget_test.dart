@@ -1,18 +1,114 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:alogyan_app/app.dart';
+import 'package:alogyan_app/core/cache/cache_service.dart';
+import 'package:alogyan_app/features/auth/controllers/auth_controller.dart';
+import 'package:alogyan_app/features/auth/data/auth_repository.dart';
+import 'package:alogyan_app/features/auth/models/user_model.dart';
+
+class FakeCacheService extends CacheService {
+  final Map<String, dynamic> memoryStore = {};
+
+  @override
+  Future<void> saveUser(Map<String, dynamic> userData) async {
+    memoryStore['active_user'] = userData;
+  }
+
+  @override
+  Map<String, dynamic>? getCachedUser() {
+    final data = memoryStore['active_user'];
+    if (data is Map) {
+      return Map<String, dynamic>.from(data);
+    }
+    return null;
+  }
+
+  @override
+  Future<void> clearUser() async {
+    memoryStore.remove('active_user');
+  }
+}
 
 void main() {
-  testWidgets('AlogyanApp smoke test renders BottomNavigationBar and Dashboard', (WidgetTester tester) async {
+  setUp(() {
     Get.testMode = true;
+    Get.reset();
+  });
+
+  testWidgets('AlogyanApp renders LoginScreen when not authenticated', (WidgetTester tester) async {
+    final fakeCache = FakeCacheService();
+    final authRepo = AuthRepository(cacheService: fakeCache);
+    Get.put(AuthController(authRepository: authRepo));
+
     await tester.pumpWidget(const AlogyanApp());
+    await tester.pump();
 
-    // Verify Dashboard content is rendered
-    expect(find.text("Today's Schedule"), findsOneWidget);
-    expect(find.text('Take Attendance'), findsOneWidget);
-    expect(find.text('Collect Fee'), findsOneWidget);
+    // Verify Login Screen branding and controls
+    expect(find.text('Alogyan'), findsOneWidget);
+    expect(find.text('Educator Companion'), findsOneWidget);
+    expect(find.text('Sign In'), findsOneWidget);
+    expect(find.text('Mobile OTP'), findsOneWidget);
+    expect(find.text('Email & Password'), findsOneWidget);
+    expect(find.text('Terms of Service'), findsOneWidget);
+    expect(find.text('Privacy Policy'), findsOneWidget);
+  });
 
-    // Verify BottomNavigationBar tabs are present
+  testWidgets('Terms of Service and Privacy Policy sheets open on tap', (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(1179, 2556);
+    tester.view.devicePixelRatio = 3.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final fakeCache = FakeCacheService();
+    final authRepo = AuthRepository(cacheService: fakeCache);
+    Get.put(AuthController(authRepository: authRepo));
+
+    await tester.pumpWidget(const AlogyanApp());
+    await tester.pump();
+
+    // Tap Terms of Service link
+    await tester.tap(find.text('Terms of Service'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Alogyan Educator & Institute Agreement'), findsOneWidget);
+    expect(find.text('I Agree & Understand'), findsOneWidget);
+
+    // Close Terms sheet
+    await tester.tap(find.text('I Agree & Understand'));
+    await tester.pumpAndSettle();
+
+    // Tap Privacy Policy link
+    await tester.tap(find.text('Privacy Policy'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Your data is end-to-end encrypted and never sold'), findsOneWidget);
+    expect(find.text('I Understand'), findsOneWidget);
+
+    // Close Privacy sheet
+    await tester.tap(find.text('I Understand'));
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('AlogyanApp transitions to MainNavigationShell when user logs in', (WidgetTester tester) async {
+    final fakeCache = FakeCacheService();
+    final authRepo = AuthRepository(cacheService: fakeCache);
+    final authController = Get.put(AuthController(authRepository: authRepo));
+
+    await tester.pumpWidget(const AlogyanApp());
+    await tester.pump();
+
+    // Initially on LoginScreen
+    expect(find.text('Sign In'), findsOneWidget);
+
+    // Perform demo login as Dr. Sanjoy Sarkar
+    await authController.loginWithDemo(UserModel.demoProfiles[0]);
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
+
+    // Verify MainNavigationShell is now active
+    expect(find.text('Today\'s Schedule'), findsOneWidget);
     expect(find.text('Dashboard'), findsOneWidget);
     expect(find.text('Attendance'), findsOneWidget);
     expect(find.text('Fees'), findsOneWidget);

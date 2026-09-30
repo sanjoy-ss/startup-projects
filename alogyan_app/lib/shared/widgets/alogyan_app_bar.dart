@@ -3,6 +3,9 @@ import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../core/constants/colors.dart';
 import '../../core/sync/sync_worker.dart';
+import '../../features/auth/controllers/auth_controller.dart';
+import '../../features/auth/models/user_model.dart';
+import '../../features/auth/widgets/user_profile_modal.dart';
 import '../../features/navigation/controllers/navigation_controller.dart';
 
 class AlogyanAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -11,10 +14,13 @@ class AlogyanAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => const Size.fromHeight(64.0);
 
-  String _getSubtitle(int index) {
+  String _getSubtitle(int index, UserModel? user) {
+    final educatorInfo = user != null
+        ? '${user.name} • ${user.subject}'
+        : 'Prof. Sanjoy • Physics & Maths';
     switch (index) {
       case 0:
-        return 'Prof. Sanjoy • Physics & Maths';
+        return educatorInfo;
       case 1:
         return 'Rapid Classroom Attendance';
       case 2:
@@ -33,6 +39,7 @@ class AlogyanAppBar extends StatelessWidget implements PreferredSizeWidget {
         : Get.put(NavigationController());
 
     final syncWorker = Get.isRegistered<SyncWorker>() ? Get.find<SyncWorker>() : null;
+    final authController = Get.isRegistered<AuthController>() ? Get.find<AuthController>() : null;
 
     return AppBar(
       toolbarHeight: 64.0,
@@ -71,53 +78,100 @@ class AlogyanAppBar extends StatelessWidget implements PreferredSizeWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Row(
-                  children: [
-                    const Text(
-                      'Alogyan Academy',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: AlogyanColors.textPrimary,
-                        letterSpacing: -0.2,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: AlogyanColors.surfaceMuted,
-                        borderRadius: BorderRadius.circular(4),
-                        border: Border.all(color: AlogyanColors.border),
-                      ),
-                      child: const Text(
-                        'MAIN',
-                        style: TextStyle(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w700,
-                          color: AlogyanColors.textSecondary,
+                Obx(() {
+                  final user = authController?.currentUser.value;
+                  return Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          user?.instituteName ?? 'Alogyan Academy',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: AlogyanColors.textPrimary,
+                            letterSpacing: -0.2,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 2),
-                Obx(() => Text(
-                      _getSubtitle(navController.currentIndex.value),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: AlogyanColors.textSecondary,
+                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: AlogyanColors.surfaceMuted,
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: AlogyanColors.border),
+                        ),
+                        child: Text(
+                          user?.activeBranchName.toUpperCase() ?? 'MAIN',
+                          style: const TextStyle(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w700,
+                            color: AlogyanColors.textSecondary,
+                          ),
+                        ),
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    )),
+                    ],
+                  );
+                }),
+                const SizedBox(height: 2),
+                Obx(() {
+                  final user = authController?.currentUser.value;
+                  return Text(
+                    _getSubtitle(navController.currentIndex.value, user),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: AlogyanColors.textSecondary,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  );
+                }),
               ],
             ),
           ),
         ],
       ),
       actions: [
+        // Educator Profile Avatar Action
+        if (authController != null)
+          Obx(() {
+            final user = authController.currentUser.value;
+            return Padding(
+              padding: const EdgeInsets.only(right: 6.0),
+              child: InkWell(
+                onTap: () => UserProfileModal.show(context),
+                borderRadius: BorderRadius.circular(20),
+                child: Tooltip(
+                  message: '${user?.name ?? "Educator"} (${user?.roleDisplay ?? "Faculty"}) • Tap for Profile & Logout',
+                  child: Container(
+                    width: 34,
+                    height: 34,
+                    decoration: BoxDecoration(
+                      color: AlogyanColors.primaryLight,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: AlogyanColors.primary.withValues(alpha: 0.35),
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        user?.initials ?? 'A',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                          color: AlogyanColors.primary,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }),
         // Live Real-Time Cloud Sync Indicator
         if (syncWorker != null)
           Obx(() {
