@@ -158,15 +158,15 @@ class DashboardScreen extends StatelessWidget {
           // Today's Class Timeline
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              Text(
+            children: [
+              const Text(
                 "Today's Schedule",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AlogyanColors.textPrimary),
               ),
-              Text(
-                '3 classes scheduled',
-                style: TextStyle(fontSize: 12, color: AlogyanColors.textSecondary),
-              ),
+              Obx(() => Text(
+                    '${controller.todayClassesCount} ${controller.todayClassesCount == 1 ? 'class' : 'classes'} scheduled',
+                    style: const TextStyle(fontSize: 12, color: AlogyanColors.textSecondary),
+                  )),
             ],
           ),
           const SizedBox(height: 12),
@@ -174,6 +174,37 @@ class DashboardScreen extends StatelessWidget {
           // Dynamic Batch Cards
           Obx(() {
             final schedule = controller.todaySchedule;
+            if (schedule.isEmpty) {
+              return AlogyanCard(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                child: Center(
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: const BoxDecoration(
+                          color: AlogyanColors.surfaceMuted,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(LucideIcons.calendarCheck, size: 28, color: AlogyanColors.textSecondary),
+                      ),
+                      const SizedBox(height: 12),
+                      const Text(
+                        'No Classes Scheduled Today',
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AlogyanColors.textPrimary),
+                      ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        'Enjoy your free time or schedule a new batch session in your institute portal.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 12, color: AlogyanColors.textSecondary),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+
             return ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),

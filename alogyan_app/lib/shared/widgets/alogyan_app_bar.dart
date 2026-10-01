@@ -16,8 +16,8 @@ class AlogyanAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   String _getSubtitle(int index, UserModel? user) {
     final educatorInfo = user != null
-        ? '${user.name} • ${user.subject}'
-        : 'Prof. Sanjoy • Physics & Maths';
+        ? '${user.name} • ${user.subject.isNotEmpty ? user.subject : user.designation}'
+        : 'Educator Workspace';
     switch (index) {
       case 0:
         return educatorInfo;

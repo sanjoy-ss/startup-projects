@@ -1,6 +1,10 @@
+import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../shared/widgets/status_badge.dart';
+import '../../auth/controllers/auth_controller.dart';
 import '../../students/controllers/students_controller.dart';
 
 class BatchScheduleItem {
@@ -21,38 +25,86 @@ class BatchScheduleItem {
     required this.statusType,
     this.meetLink,
   });
+
+  factory BatchScheduleItem.fromMap(String id, Map<String, dynamic> data) {
+    final statusStr = (data['status'] as String?)?.toUpperCase() ?? 'SCHEDULED';
+    StatusBadgeType type = StatusBadgeType.info;
+    if (statusStr.contains('NEXT')) {
+      type = StatusBadgeType.warning;
+    } else if (statusStr.contains('ONLINE') || statusStr.contains('ACTIVE')) {
+      type = StatusBadgeType.info;
+    } else if (statusStr.contains('COMPLETED')) {
+      type = StatusBadgeType.success;
+    }
+
+    return BatchScheduleItem(
+      id: id,
+      time: (data['time'] as String?) ?? 'Time TBD',
+      batchName: (data['batchName'] as String?) ?? (data['name'] as String?) ?? 'Batch Session',
+      roomOrMeet: (data['roomOrMeet'] as String?) ?? (data['room'] as String?) ?? 'Main Hall',
+      status: statusStr,
+      statusType: type,
+      meetLink: data['meetLink'] as String?,
+    );
+  }
 }
 
 class DashboardController extends GetxController {
-  final RxList<BatchScheduleItem> todaySchedule = <BatchScheduleItem>[
-    BatchScheduleItem(
-      id: 'b1',
-      time: '04:00 PM - 05:30 PM',
-      batchName: 'Class 10 - Advanced Physics',
-      roomOrMeet: 'Room 201 (Offline Floor)',
-      status: 'NEXT CLASS',
-      statusType: StatusBadgeType.warning,
-    ),
-    BatchScheduleItem(
-      id: 'b2',
-      time: '06:00 PM - 07:30 PM',
-      batchName: 'Class 12 - Calculus Masterclass',
-      roomOrMeet: 'Google Meet (1-tap start)',
-      status: 'ONLINE',
-      statusType: StatusBadgeType.info,
-      meetLink: 'https://meet.google.com/alo-gyan-edu',
-    ),
-    BatchScheduleItem(
-      id: 'b3',
-      time: '08:00 PM - 09:00 PM',
-      batchName: 'Doubt Clearing & Numericals',
-      roomOrMeet: 'Room 102',
-      status: 'SCHEDULED',
-      statusType: StatusBadgeType.info,
-    ),
-  ].obs;
+  final FirebaseFirestore? firestore;
+  StreamSubscription? _scheduleSubscription;
 
-  final RxInt fallbackPendingDues = 7500.obs;
+  final RxList<BatchScheduleItem> todaySchedule = <BatchScheduleItem>[].obs;
+
+  DashboardController({this.firestore});
+
+  @override
+  void onInit() {
+    super.onInit();
+    _bindScheduleStream();
+  }
+
+  void _bindScheduleStream() {
+    final authCtrl = Get.isRegistered<AuthController>() ? Get.find<AuthController>() : null;
+    final user = authCtrl?.currentUser.value;
+    loadScheduleForInstitute(user?.instituteId);
+
+    if (authCtrl != null) {
+      ever(authCtrl.currentUser, (u) {
+        loadScheduleForInstitute(u?.instituteId);
+      });
+    }
+  }
+
+  void loadScheduleForInstitute(String? instituteId) {
+    _scheduleSubscription?.cancel();
+    try {
+      final db = firestore ?? FirebaseFirestore.instance;
+      Query<Map<String, dynamic>> query = db.collection('batches');
+      if (instituteId != null && instituteId.isNotEmpty) {
+        query = query.where('instituteId', isEqualTo: instituteId);
+      }
+
+      _scheduleSubscription = query.snapshots().listen(
+        (snapshot) {
+          final batches = snapshot.docs.map((doc) {
+            return BatchScheduleItem.fromMap(doc.id, doc.data());
+          }).toList();
+          todaySchedule.assignAll(batches);
+        },
+        onError: (e) {
+          debugPrint('Notice streaming today batches: $e');
+        },
+      );
+    } catch (e) {
+      debugPrint('Firestore offline fallback for dashboard schedule: $e');
+    }
+  }
+
+  @override
+  void onClose() {
+    _scheduleSubscription?.cancel();
+    super.onClose();
+  }
 
   int get todayClassesCount => todaySchedule.length;
 
@@ -61,7 +113,7 @@ class DashboardController extends GetxController {
       final ctrl = Get.find<StudentsController>();
       return ctrl.allStudents.fold(0, (sum, s) => sum + s.dueAmount);
     }
-    return fallbackPendingDues.value;
+    return 0;
   }
 
   Future<void> launchClassLink(String? url) async {
