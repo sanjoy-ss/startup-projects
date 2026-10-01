@@ -49,7 +49,7 @@ void main() {
     expect(find.text('Educator Companion'), findsOneWidget);
     expect(find.text('Sign In'), findsOneWidget);
     expect(find.text('Mobile OTP'), findsOneWidget);
-    expect(find.text('Email & Password'), findsOneWidget);
+    expect(find.text('Continue with Email & Password'), findsOneWidget);
     expect(find.text('Terms of Service'), findsOneWidget);
     expect(find.text('Privacy Policy'), findsOneWidget);
   });
@@ -114,4 +114,50 @@ void main() {
     expect(find.text('Fees'), findsOneWidget);
     expect(find.text('Students'), findsOneWidget);
   });
+
+  testWidgets('Email & Password bottom sheet opens and toggles between Sign In and Sign Up Free', (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(1179, 2556);
+    tester.view.devicePixelRatio = 3.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final fakeCache = FakeCacheService();
+    final authRepo = AuthRepository(cacheService: fakeCache);
+    Get.put(AuthController(authRepository: authRepo));
+
+    await tester.pumpWidget(const AlogyanApp());
+    await tester.pump();
+
+    // Tap Continue with Email & Password button
+    await tester.tap(find.text('Continue with Email & Password'));
+    await tester.pumpAndSettle();
+
+    // Verify Sign In sheet components
+    expect(find.text('Educator Sign In'), findsOneWidget);
+    expect(find.text('Institutional Email'), findsOneWidget);
+    expect(find.text('Password'), findsOneWidget);
+    expect(find.text('Forgot Password?'), findsOneWidget);
+    expect(find.text('Sign In to Alogyan'), findsOneWidget);
+    expect(find.text('Sign Up Free'), findsOneWidget);
+
+    // Switch to Sign Up Free tab
+    await tester.tap(find.text('Sign Up Free'));
+    await tester.pumpAndSettle();
+
+    // Verify Sign Up form components
+    expect(find.text('Create Free Account'), findsOneWidget);
+    expect(find.text('Private Tutor'), findsOneWidget);
+    expect(find.text('Coaching'), findsOneWidget);
+    expect(find.text('Faculty'), findsOneWidget);
+    expect(find.text('Full Name'), findsOneWidget);
+    expect(find.text('Classes / Batch Name'), findsOneWidget);
+    expect(find.text('Create Password'), findsOneWidget);
+    expect(find.text('Create Free Educator Account'), findsOneWidget);
+
+    // Tap Coaching role chip
+    await tester.tap(find.text('Coaching'));
+    await tester.pumpAndSettle();
+    expect(find.text('Institute Name'), findsOneWidget);
+  });
 }
+

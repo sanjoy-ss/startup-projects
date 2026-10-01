@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import '../../../core/constants/colors.dart';
 
 class AuthTextField extends StatelessWidget {
@@ -95,10 +96,22 @@ class AuthTextField extends StatelessWidget {
                 color: AlogyanColors.textMuted,
                 fontWeight: FontWeight.normal,
               ),
-              prefixIcon: prefixIcon,
+              prefixIcon: prefixIcon != null
+                  ? Padding(
+                      padding: const EdgeInsets.only(left: 16, right: 4),
+                      child: prefixIcon,
+                    )
+                  : null,
+              prefixIconConstraints: const BoxConstraints(
+                minWidth: 0,
+                minHeight: 0,
+              ),
               prefix: prefix,
               suffixIcon: suffixIcon,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 14,
+              ),
               filled: true,
               fillColor: AlogyanColors.surface,
               enabledBorder: OutlineInputBorder(
@@ -121,11 +134,17 @@ class AuthTextField extends StatelessWidget {
               ),
               errorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AlogyanColors.danger, width: 1.2),
+                borderSide: const BorderSide(
+                  color: AlogyanColors.danger,
+                  width: 1.2,
+                ),
               ),
               focusedErrorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AlogyanColors.danger, width: 1.8),
+                borderSide: const BorderSide(
+                  color: AlogyanColors.danger,
+                  width: 1.8,
+                ),
               ),
             ),
           ),

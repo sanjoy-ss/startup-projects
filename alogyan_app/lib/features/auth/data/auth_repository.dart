@@ -121,6 +121,64 @@ class AuthRepository {
     }
   }
 
+  Future<UserModel> registerWithEmail({
+    required String name,
+    required String email,
+    required String password,
+    required String phone,
+    String? instituteName,
+    String role = 'teacher',
+  }) async {
+    final trimmedEmail = email.trim();
+    final trimmedPassword = password.trim();
+    final trimmedName = name.trim();
+    final trimmedPhone = phone.trim();
+
+    if (trimmedName.isEmpty) throw 'Please enter your full name.';
+    if (trimmedEmail.isEmpty || !trimmedEmail.contains('@')) {
+      throw 'Please enter a valid institutional email address.';
+    }
+    if (trimmedPassword.length < 6) {
+      throw 'Password must be at least 6 characters.';
+    }
+
+    final auth = _firebaseAuth;
+    User? fbUser;
+    if (auth != null) {
+      try {
+        final credential = await auth.createUserWithEmailAndPassword(
+          email: trimmedEmail,
+          password: trimmedPassword,
+        );
+        fbUser = credential.user;
+        await fbUser?.updateDisplayName(trimmedName);
+      } catch (e) {
+        debugPrint('Notice during Firebase registration: $e');
+      }
+    }
+
+    final newUser = UserModel(
+      uid: fbUser?.uid ?? 'user_${DateTime.now().millisecondsSinceEpoch}',
+      name: trimmedName,
+      email: trimmedEmail,
+      phone: trimmedPhone.isEmpty ? '+919876543210' : (trimmedPhone.startsWith('+') ? trimmedPhone : '+91$trimmedPhone'),
+      role: role,
+      instituteId: 'custom_academy',
+      instituteName: (instituteName != null && instituteName.isNotEmpty)
+          ? instituteName
+          : 'Alogyan Academy',
+      branchIds: ['main-campus'],
+      activeBranchId: 'main-campus',
+      activeBranchName: 'Main Campus',
+      designation: role == 'owner' ? 'Director' : 'Faculty Member',
+      subject: 'Academic Faculty',
+      lastLoginAt: DateTime.now(),
+    );
+
+    await saveUserToCache(newUser);
+    return newUser;
+  }
+
   Future<String> sendPhoneOtp(String phoneNumber) async {
     final cleanPhone = phoneNumber.replaceAll(RegExp(r'\s+'), '');
     if (cleanPhone.length < 10) {

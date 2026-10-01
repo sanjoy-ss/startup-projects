@@ -139,8 +139,8 @@ void main() {
 
       expect(controller.isLoggedIn, false);
       expect(controller.activeTab.value, 'phone');
-      expect(controller.phoneController.text, isNotEmpty);
-      expect(controller.emailController.text, isNotEmpty);
+      expect(controller.phoneController.text, isEmpty);
+      expect(controller.emailController.text, isEmpty);
     });
 
     test('switches tabs and toggles password visibility', () {

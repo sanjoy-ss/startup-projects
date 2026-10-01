@@ -1,6 +1,8 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../../../core/api/api_client.dart';
 import '../../navigation/screens/main_navigation_shell.dart';
 import '../data/auth_repository.dart';
@@ -17,9 +19,9 @@ class AuthController extends GetxController {
   bool get isLoggedIn => currentUser.value != null;
 
   // Form Controllers
-  final phoneController = TextEditingController(text: '9876543210');
-  final emailController = TextEditingController(text: 'sanjoy@alogyan.com');
-  final passwordController = TextEditingController(text: 'Admin@123');
+  final phoneController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
   final otpController = TextEditingController();
 
   // Observable UI States
@@ -137,7 +139,8 @@ class AuthController extends GetxController {
   Future<void> verifyOtp(String code) async {
     final otp = code.trim();
     if (otp.length != 6) {
-      errorMessage.value = 'Please enter the complete 6-digit verification code.';
+      errorMessage.value =
+          'Please enter the complete 6-digit verification code.';
       return;
     }
 
@@ -197,6 +200,45 @@ class AuthController extends GetxController {
         Get.snackbar(
           'Welcome, ${user.name}',
           'Signed in to ${user.instituteName} (${user.activeBranchName})',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
+    } catch (e) {
+      errorMessage.value = e.toString();
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> registerWithEmail({
+    required String name,
+    required String email,
+    required String password,
+    required String phone,
+    String? instituteName,
+    String role = 'teacher',
+  }) async {
+    try {
+      isLoading.value = true;
+      errorMessage.value = '';
+
+      final user = await authRepository.registerWithEmail(
+        name: name,
+        email: email,
+        password: password,
+        phone: phone,
+        instituteName: instituteName,
+        role: role,
+      );
+
+      currentUser.value = user;
+      _syncApiClient(user);
+
+      if (Get.key.currentState != null) {
+        Get.offAll(() => const MainNavigationShell());
+        Get.snackbar(
+          'Account Created',
+          'Welcome to Alogyan, ${user.name}!',
           snackPosition: SnackPosition.BOTTOM,
         );
       }
