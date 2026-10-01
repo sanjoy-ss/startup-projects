@@ -83,8 +83,51 @@ class StudentsScreen extends StatelessWidget {
           child: Obx(() {
             final list = controller.filteredStudents;
             if (list.isEmpty) {
-              return const Center(
-                child: Text('No students found', style: TextStyle(color: AlogyanColors.textSecondary)),
+              final isSearching = controller.searchQuery.value.isNotEmpty;
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(32.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: const BoxDecoration(
+                          color: AlogyanColors.surfaceMuted,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          LucideIcons.users,
+                          size: 36,
+                          color: AlogyanColors.textSecondary,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        isSearching
+                            ? 'No students match "${controller.searchQuery.value}"'
+                            : 'No students enrolled yet',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: AlogyanColors.textPrimary,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        isSearching
+                            ? 'Try searching by a different name or batch.'
+                            : 'Students enrolled in your institute will appear here automatically for rapid calling and attendance.',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: AlogyanColors.textSecondary,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
               );
             }
 
@@ -103,7 +146,9 @@ class StudentsScreen extends StatelessWidget {
                       CircleAvatar(
                         backgroundColor: AlogyanColors.primaryLight,
                         child: Text(
-                          student.name.substring(0, 1),
+                          student.name.isNotEmpty
+                              ? student.name.substring(0, 1).toUpperCase()
+                              : 'S',
                           style: const TextStyle(fontWeight: FontWeight.bold, color: AlogyanColors.primary),
                         ),
                       ),

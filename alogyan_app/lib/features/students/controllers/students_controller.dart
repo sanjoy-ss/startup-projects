@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/cache/cache_service.dart';
+import '../../auth/controllers/auth_controller.dart';
 import '../data/repositories/student_repository.dart';
 
 class StudentItem {
@@ -33,23 +34,20 @@ class StudentsController extends GetxController {
   final RxString searchQuery = ''.obs;
   final RxList<StudentItem> allStudents = <StudentItem>[].obs;
 
-  StudentsController({this.repository}) {
-    allStudents.assignAll([
-      StudentItem(id: '1', name: 'Aarav Sharma', batch: 'Class 10 Physics', phone: '+919876543210', dueAmount: 0),
-      StudentItem(id: '2', name: 'Diya Sen', batch: 'Class 10 Physics', phone: '+919876543211', dueAmount: 2000),
-      StudentItem(id: '3', name: 'Ishaan Roy', batch: 'Class 12 Maths', phone: '+919876543212', dueAmount: 3500),
-      StudentItem(id: '4', name: 'Meera Patel', batch: 'Class 10 Physics', phone: '+919876543213', dueAmount: 0),
-      StudentItem(id: '5', name: 'Rohan Das', batch: 'Class 12 Maths', phone: '+919876543214', dueAmount: 2000),
-    ]);
-  }
+  StudentsController({this.repository});
 
   @override
   void onInit() {
     super.onInit();
-    if (repository != null) {
-      allStudents.bindStream(repository!.streamStudents());
-    } else if (Get.isRegistered<StudentRepository>()) {
-      allStudents.bindStream(Get.find<StudentRepository>().streamStudents());
+    final repo = repository ??
+        (Get.isRegistered<StudentRepository>()
+            ? Get.find<StudentRepository>()
+            : null);
+    if (repo != null) {
+      final user = Get.isRegistered<AuthController>()
+          ? Get.find<AuthController>().currentUser.value
+          : null;
+      allStudents.bindStream(repo.streamStudents(instituteId: user?.instituteId));
     }
   }
 

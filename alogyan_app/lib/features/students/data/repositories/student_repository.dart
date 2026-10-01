@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import '../../../../core/cache/cache_service.dart';
 import '../../controllers/students_controller.dart';
 
@@ -12,59 +13,54 @@ class StudentRepository {
     this.firestore,
   });
 
-  /// Real-time stream of students combining Firestore snapshots with local Cache fallback
-  Stream<List<StudentItem>> streamStudents() {
+  /// Real-time stream of students scoped to the active tenant/institute
+  Stream<List<StudentItem>> streamStudents({String? instituteId}) {
     // 1. Get initial cached list from Hive (0ms load)
     final cachedData = cacheService.getCachedStudents();
     final initialList = cachedData.map((map) {
       return StudentItem(
-        id: map['id'] as String,
-        name: map['name'] as String,
-        batch: map['batch'] as String,
-        phone: map['phone'] as String,
+        id: map['id']?.toString() ?? '',
+        name: (map['name'] as String?) ?? 'Unnamed',
+        batch: (map['batch'] as String?) ?? 'General',
+        phone: (map['phone'] as String?) ?? '',
         dueAmount: (map['dueAmount'] as int?) ?? 0,
       );
     }).toList();
 
-    // Controller that immediately emits cached data, then connects to Firestore stream
     final controller = StreamController<List<StudentItem>>.broadcast();
     controller.add(initialList);
 
-    // If Firestore is available, stream real-time updates
+    // 2. Real-time stream from Firestore scoped by instituteId
     try {
       final db = firestore ?? FirebaseFirestore.instance;
-      db.collection('students').snapshots().listen(
+      Query<Map<String, dynamic>> query = db.collection('students');
+      if (instituteId != null && instituteId.isNotEmpty) {
+        query = query.where('instituteId', isEqualTo: instituteId);
+      }
+
+      query.snapshots().listen(
         (snapshot) {
-          if (snapshot.docs.isNotEmpty) {
-            final liveStudents = snapshot.docs.map((doc) {
-              final data = doc.data();
-              return StudentItem(
-                id: doc.id,
-                name: (data['name'] as String?) ?? 'Unnamed',
-                batch: (data['batch'] as String?) ?? 'General',
-                phone: (data['phone'] as String?) ?? '',
-                dueAmount: (data['dueAmount'] as int?) ?? 0,
-              );
-            }).toList();
+          final liveStudents = snapshot.docs.map((doc) {
+            final data = doc.data();
+            return StudentItem(
+              id: doc.id,
+              name: (data['name'] as String?) ?? 'Unnamed',
+              batch: (data['batch'] as String?) ?? 'General',
+              phone: (data['phone'] as String?) ?? '',
+              dueAmount: (data['dueAmount'] as int?) ?? 0,
+            );
+          }).toList();
 
-            // Cache updated list in Hive
-            cacheService.cacheStudents(liveStudents.map((s) => {
-              'id': s.id,
-              'name': s.name,
-              'batch': s.batch,
-              'phone': s.phone,
-              'dueAmount': s.dueAmount,
-            }).toList());
-
-            controller.add(liveStudents);
-          }
+          // Cache updated list in Hive
+          cacheService.cacheStudents(liveStudents.map((s) => s.toMap()).toList());
+          controller.add(liveStudents);
         },
         onError: (error) {
-          // Keep serving cached stream on Firestore permission / network error
+          debugPrint('Notice streaming students: $error');
         },
       );
-    } catch (_) {
-      // Offline fallback mode
+    } catch (e) {
+      debugPrint('Firestore offline fallback for students: $e');
     }
 
     return controller.stream;
