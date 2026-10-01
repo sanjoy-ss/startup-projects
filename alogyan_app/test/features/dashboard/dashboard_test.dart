@@ -20,7 +20,7 @@ void main() {
 
     expect(controller.todaySchedule, isEmpty);
     expect(controller.todayClassesCount, 0);
-    expect(controller.totalPendingDues, 0);
+    expect(controller.totalPendingDues.value, 0);
   });
 
   test('DashboardController computes pending dues dynamically from StudentsController', () {
@@ -33,7 +33,7 @@ void main() {
     final controller = DashboardController();
     controller.onInit();
 
-    expect(controller.totalPendingDues, 2000);
+    expect(controller.totalPendingDues.value, 2000);
   });
 
   testWidgets('DashboardScreen displays empty schedule card when no classes today', (WidgetTester tester) async {

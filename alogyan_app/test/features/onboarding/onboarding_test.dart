@@ -201,7 +201,7 @@ void main() {
 
       // Now should transition to LoginScreen
       expect(find.text('Sign In'), findsOneWidget);
-      expect(find.text('Mobile OTP'), findsOneWidget);
+      expect(find.text('Continue'), findsOneWidget);
       expect(find.text('Continue with Email & Password'), findsOneWidget);
     });
   });

@@ -105,7 +105,7 @@ class DashboardScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Obx(() => Text(
-                            '₹${currencyFormatter.format(controller.totalPendingDues)}',
+                            '₹${currencyFormatter.format(controller.totalPendingDues.value)}',
                             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AlogyanColors.danger),
                           )),
                     ],

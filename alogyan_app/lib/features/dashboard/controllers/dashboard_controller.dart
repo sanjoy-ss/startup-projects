@@ -54,6 +54,7 @@ class DashboardController extends GetxController {
   StreamSubscription? _scheduleSubscription;
 
   final RxList<BatchScheduleItem> todaySchedule = <BatchScheduleItem>[].obs;
+  final RxInt totalPendingDues = 0.obs;
 
   DashboardController({this.firestore});
 
@@ -61,6 +62,17 @@ class DashboardController extends GetxController {
   void onInit() {
     super.onInit();
     _bindScheduleStream();
+    _bindPendingDues();
+  }
+
+  void _bindPendingDues() {
+    final ctrl = Get.isRegistered<StudentsController>()
+        ? Get.find<StudentsController>()
+        : Get.put(StudentsController());
+    totalPendingDues.value = ctrl.allStudents.fold(0, (acc, s) => acc + s.dueAmount);
+    ever(ctrl.allStudents, (students) {
+      totalPendingDues.value = students.fold(0, (acc, s) => acc + s.dueAmount);
+    });
   }
 
   void _bindScheduleStream() {
@@ -107,14 +119,6 @@ class DashboardController extends GetxController {
   }
 
   int get todayClassesCount => todaySchedule.length;
-
-  int get totalPendingDues {
-    if (Get.isRegistered<StudentsController>()) {
-      final ctrl = Get.find<StudentsController>();
-      return ctrl.allStudents.fold(0, (sum, s) => sum + s.dueAmount);
-    }
-    return 0;
-  }
 
   Future<void> launchClassLink(String? url) async {
     if (url == null || url.isEmpty) return;

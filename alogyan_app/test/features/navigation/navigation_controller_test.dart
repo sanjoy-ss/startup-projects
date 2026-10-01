@@ -7,6 +7,14 @@ import 'package:alogyan_app/features/students/controllers/students_controller.da
 import 'package:alogyan_app/features/dashboard/controllers/dashboard_controller.dart';
 
 void main() {
+  setUp(() {
+    Get.reset();
+  });
+
+  tearDown(() {
+    Get.reset();
+  });
+
   group('NavigationController', () {
     test('initializes at index 0 and updates tab reactively', () {
       final controller = NavigationController();
@@ -19,7 +27,14 @@ void main() {
 
   group('AttendanceController', () {
     test('toggles attendance status and counts correctly', () {
+      final studentsCtrl = Get.put(StudentsController());
+      studentsCtrl.allStudents.assignAll([
+        StudentItem(id: 's1', name: 'Alice Smith', batch: 'Batch A', phone: '123', dueAmount: 0),
+        StudentItem(id: 's2', name: 'Bob Jones', batch: 'Batch B', phone: '456', dueAmount: 500),
+      ]);
+
       final controller = AttendanceController();
+      controller.onInit();
       final initialPresent = controller.presentCount;
 
       controller.toggleStatus(0); // 1st student was present -> absent
@@ -47,31 +62,38 @@ void main() {
   group('StudentsController and Settlement', () {
     test('filters students by search query and settles due balance', () {
       final controller = StudentsController();
-      expect(controller.filteredStudents.length, 5);
+      controller.allStudents.assignAll([
+        StudentItem(id: '1', name: 'Aarav Sharma', batch: 'Batch A', phone: '111', dueAmount: 1000),
+        StudentItem(id: '2', name: 'Diya Sen', batch: 'Batch B', phone: '222', dueAmount: 2000),
+      ]);
+      expect(controller.filteredStudents.length, 2);
 
       controller.updateSearch('diya');
       expect(controller.filteredStudents.length, 1);
       expect(controller.filteredStudents.first.name, 'Diya Sen');
 
       final initialDue = controller.totalPendingDues;
-      expect(initialDue, greaterThan(0));
+      expect(initialDue, 3000);
 
       // Settle Diya Sen's due
       controller.settleStudentDue('2', 2000);
       final diya = controller.allStudents.firstWhere((s) => s.id == '2');
       expect(diya.dueAmount, 0);
-      expect(controller.totalPendingDues, initialDue - 2000);
+      expect(controller.totalPendingDues, 1000);
     });
   });
 
   group('DashboardController', () {
     test('computes total classes and pending dues', () {
-      Get.testMode = true;
-      Get.put(StudentsController());
+      final studentsCtrl = Get.put(StudentsController());
+      studentsCtrl.allStudents.assignAll([
+        StudentItem(id: 's1', name: 'Student 1', batch: 'Batch A', phone: '123', dueAmount: 1500),
+      ]);
       final controller = Get.put(DashboardController());
+      controller.onInit();
 
-      expect(controller.todayClassesCount, 3);
-      expect(controller.totalPendingDues, greaterThan(0));
+      expect(controller.todayClassesCount, 0);
+      expect(controller.totalPendingDues.value, 1500);
     });
   });
 }

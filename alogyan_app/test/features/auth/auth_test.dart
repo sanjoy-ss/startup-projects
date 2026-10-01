@@ -65,9 +65,45 @@ void main() {
     });
 
     test('role helper getters work properly', () {
-      final owner = UserModel.demoProfiles[0];
-      final teacher = UserModel.demoProfiles[1];
-      final manager = UserModel.demoProfiles[2];
+      const owner = UserModel(
+        uid: 'u1',
+        name: 'Dr. Owner',
+        email: 'owner@alogyan.com',
+        phone: '+91 9876543210',
+        instituteId: 'inst_1',
+        instituteName: 'Alogyan Academy',
+        activeBranchId: 'b1',
+        activeBranchName: 'Main Campus',
+        role: 'owner',
+        designation: 'Director',
+        subject: 'Physics',
+      );
+      const teacher = UserModel(
+        uid: 'u2',
+        name: 'Prof. Teacher',
+        email: 'teacher@alogyan.com',
+        phone: '+91 9876543211',
+        instituteId: 'inst_1',
+        instituteName: 'Alogyan Academy',
+        activeBranchId: 'b1',
+        activeBranchName: 'Main Campus',
+        role: 'teacher',
+        designation: 'Faculty',
+        subject: 'Maths',
+      );
+      const manager = UserModel(
+        uid: 'u3',
+        name: 'Manager',
+        email: 'manager@alogyan.com',
+        phone: '+91 9876543212',
+        instituteId: 'inst_1',
+        instituteName: 'Alogyan Academy',
+        activeBranchId: 'b1',
+        activeBranchName: 'Main Campus',
+        role: 'branch_manager',
+        designation: 'Branch Head',
+        subject: 'Admin',
+      );
 
       expect(owner.isOwner, true);
       expect(owner.isTeacher, false);
@@ -82,7 +118,19 @@ void main() {
     });
 
     test('serializes toMap and deserializes fromMap identically', () {
-      final original = UserModel.demoProfiles[0];
+      const original = UserModel(
+        uid: 'u1',
+        name: 'Dr. Sanjoy',
+        email: 'sanjoy@alogyan.com',
+        phone: '+91 9876543210',
+        instituteId: 'inst_1',
+        instituteName: 'Alogyan Academy',
+        activeBranchId: 'b1',
+        activeBranchName: 'Main Campus',
+        role: 'owner',
+        designation: 'Director',
+        subject: 'Physics',
+      );
       final map = original.toMap();
       final reconstructed = UserModel.fromMap(map);
 
@@ -98,7 +146,19 @@ void main() {
     });
 
     test('copyWith updates specified fields only', () {
-      final original = UserModel.demoProfiles[0];
+      const original = UserModel(
+        uid: 'u1',
+        name: 'Dr. Sanjoy',
+        email: 'sanjoy@alogyan.com',
+        phone: '+91 9876543210',
+        instituteId: 'inst_1',
+        instituteName: 'Alogyan Academy',
+        activeBranchId: 'b1',
+        activeBranchName: 'Main Campus',
+        role: 'owner',
+        designation: 'Director',
+        subject: 'Physics',
+      );
       final modified = original.copyWith(
         activeBranchId: 'north-branch',
         activeBranchName: 'North Campus',
@@ -118,13 +178,25 @@ void main() {
 
       expect(authRepo.getCachedUser(), isNull);
 
-      final demo = UserModel.demoProfiles[0];
-      await authRepo.saveUserToCache(demo);
+      const testUser = UserModel(
+        uid: 'u1',
+        name: 'Dr. Sanjoy',
+        email: 'sanjoy@alogyan.com',
+        phone: '+91 9876543210',
+        instituteId: 'inst_1',
+        instituteName: 'Alogyan Academy',
+        activeBranchId: 'b1',
+        activeBranchName: 'Main Campus',
+        role: 'owner',
+        designation: 'Director',
+        subject: 'Physics',
+      );
+      await authRepo.saveUserToCache(testUser);
 
       final cached = authRepo.getCachedUser();
       expect(cached, isNotNull);
-      expect(cached!.name, demo.name);
-      expect(cached.email, demo.email);
+      expect(cached!.name, testUser.name);
+      expect(cached.email, testUser.email);
 
       await authRepo.clearUserCache();
       expect(authRepo.getCachedUser(), isNull);
@@ -132,7 +204,7 @@ void main() {
   });
 
   group('AuthController State Management', () {
-    test('initializes with default state and demo accounts', () {
+    test('initializes with default state', () {
       final fakeCache = FakeCacheService();
       final authRepo = AuthRepository(cacheService: fakeCache);
       final controller = AuthController(authRepository: authRepo);
@@ -156,26 +228,27 @@ void main() {
       expect(controller.isPasswordVisible.value, true);
     });
 
-    test('loginWithDemo logs in educator and caches user', () async {
-      final fakeCache = FakeCacheService();
-      final authRepo = AuthRepository(cacheService: fakeCache);
-      final controller = AuthController(authRepository: authRepo);
-
-      final selected = UserModel.demoProfiles[0];
-      await controller.loginWithDemo(selected);
-
-      expect(controller.isLoggedIn, true);
-      expect(controller.currentUser.value?.uid, selected.uid);
-      expect(controller.currentUser.value?.name, selected.name);
-      expect(fakeCache.getCachedUser()?['name'], selected.name);
-    });
-
     test('switchBranch updates active branch on user model and cache', () async {
       final fakeCache = FakeCacheService();
       final authRepo = AuthRepository(cacheService: fakeCache);
       final controller = AuthController(authRepository: authRepo);
 
-      await controller.loginWithDemo(UserModel.demoProfiles[0]);
+      const testUser = UserModel(
+        uid: 'u1',
+        name: 'Dr. Sanjoy',
+        email: 'sanjoy@alogyan.com',
+        phone: '+91 9876543210',
+        instituteId: 'inst_1',
+        instituteName: 'Alogyan Academy',
+        activeBranchId: 'b1',
+        activeBranchName: 'Main Campus',
+        role: 'owner',
+        designation: 'Director',
+        subject: 'Physics',
+      );
+      controller.currentUser.value = testUser;
+      await authRepo.saveUserToCache(testUser);
+
       await controller.switchBranch('north-branch', 'North Campus');
 
       expect(controller.currentUser.value?.activeBranchId, 'north-branch');
@@ -188,7 +261,22 @@ void main() {
       final authRepo = AuthRepository(cacheService: fakeCache);
       final controller = AuthController(authRepository: authRepo);
 
-      await controller.loginWithDemo(UserModel.demoProfiles[0]);
+      const testUser = UserModel(
+        uid: 'u1',
+        name: 'Dr. Sanjoy',
+        email: 'sanjoy@alogyan.com',
+        phone: '+91 9876543210',
+        instituteId: 'inst_1',
+        instituteName: 'Alogyan Academy',
+        activeBranchId: 'b1',
+        activeBranchName: 'Main Campus',
+        role: 'owner',
+        designation: 'Director',
+        subject: 'Physics',
+      );
+      controller.currentUser.value = testUser;
+      await authRepo.saveUserToCache(testUser);
+
       expect(controller.isLoggedIn, true);
 
       await controller.signOut();

@@ -48,7 +48,8 @@ void main() {
     expect(find.text('Alogyan'), findsOneWidget);
     expect(find.text('Educator Companion'), findsOneWidget);
     expect(find.text('Sign In'), findsOneWidget);
-    expect(find.text('Mobile OTP'), findsOneWidget);
+    expect(find.text('Continue'), findsOneWidget);
+    expect(find.text('Continue with Google'), findsOneWidget);
     expect(find.text('Continue with Email & Password'), findsOneWidget);
     expect(find.text('Terms of Service'), findsOneWidget);
     expect(find.text('Privacy Policy'), findsOneWidget);
@@ -101,8 +102,20 @@ void main() {
     // Initially on LoginScreen
     expect(find.text('Sign In'), findsOneWidget);
 
-    // Perform demo login as Dr. Sanjoy Sarkar
-    await authController.loginWithDemo(UserModel.demoProfiles[0]);
+    // Perform user login
+    authController.currentUser.value = const UserModel(
+      uid: 'u1',
+      name: 'Dr. Sanjoy Sarkar',
+      email: 'sanjoy@alogyan.com',
+      phone: '+91 9876543210',
+      instituteId: 'inst_1',
+      instituteName: 'Alogyan Academy',
+      activeBranchId: 'b1',
+      activeBranchName: 'Main Campus',
+      role: 'owner',
+      designation: 'Director',
+      subject: 'Physics',
+    );
     await tester.pump();
     await tester.pump(const Duration(seconds: 4));
     await tester.pumpAndSettle();
@@ -138,10 +151,13 @@ void main() {
     expect(find.text('Password'), findsOneWidget);
     expect(find.text('Forgot Password?'), findsOneWidget);
     expect(find.text('Sign In to Alogyan'), findsOneWidget);
-    expect(find.text('Sign Up Free'), findsOneWidget);
+    final signUpFinder = find.byWidgetPredicate(
+      (w) => w is RichText && w.text.toPlainText().contains('Sign Up Free'),
+    );
+    expect(signUpFinder, findsOneWidget);
 
     // Switch to Sign Up Free tab
-    await tester.tap(find.text('Sign Up Free'));
+    await tester.tap(signUpFinder);
     await tester.pumpAndSettle();
 
     // Verify Sign Up form components
