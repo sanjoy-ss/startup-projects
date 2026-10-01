@@ -30,22 +30,20 @@ class CacheService {
     _userBox = await Hive.openBox(userBoxName);
     _settingsBox = await Hive.openBox(settingsBoxName);
 
-    // Seed default offline cache if students box is empty
-    if (_studentsBox.isEmpty) {
-      await _seedInitialStudents();
-    }
+    // Sanitize any stale dummy student data from previous demo runs
+    _sanitizeStaleDummyData();
   }
 
-  Future<void> _seedInitialStudents() async {
-    final initial = [
-      {'id': '1', 'name': 'Aarav Sharma', 'batch': 'Class 10 Physics', 'phone': '+919876543210', 'dueAmount': 0},
-      {'id': '2', 'name': 'Diya Sen', 'batch': 'Class 10 Physics', 'phone': '+919876543211', 'dueAmount': 2000},
-      {'id': '3', 'name': 'Ishaan Roy', 'batch': 'Class 12 Maths', 'phone': '+919876543212', 'dueAmount': 3500},
-      {'id': '4', 'name': 'Meera Patel', 'batch': 'Class 10 Physics', 'phone': '+919876543213', 'dueAmount': 0},
-      {'id': '5', 'name': 'Rohan Das', 'batch': 'Class 12 Maths', 'phone': '+919876543214', 'dueAmount': 2000},
-    ];
-    for (final s in initial) {
-      await _studentsBox.put(s['id'], s);
+  void _sanitizeStaleDummyData() {
+    final dummyIds = {'1', '2', '3', '4', '5'};
+    final keysToRemove = <dynamic>[];
+    for (final key in _studentsBox.keys) {
+      if (dummyIds.contains(key.toString())) {
+        keysToRemove.add(key);
+      }
+    }
+    for (final k in keysToRemove) {
+      _studentsBox.delete(k);
     }
   }
 
@@ -101,7 +99,7 @@ class CacheService {
   }
 
   bool hasCompletedOnboarding() {
-    return _settingsBox.get('completed_onboarding', defaultValue: false) as bool;
+    return _settingsBox.get('completed_onboarding', defaultValue: false) as bool? ?? false;
   }
 
   Future<void> setOnboardingCompleted(bool value) async {
