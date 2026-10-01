@@ -11,7 +11,6 @@ import '../../../core/constants/mascot_data.dart';
 import '../../../core/widgets/mascot_holding_sheet_wrapper.dart';
 import '../controllers/auth_controller.dart';
 import '../widgets/auth_text_field.dart';
-import '../widgets/quick_demo_login_sheet.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -602,11 +601,9 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  /// Clean separated bottom sheet for Institutional Google account sign-in
+  /// Google account sign-in via Firebase
   void _showGoogleSheet(BuildContext context, AuthController controller) {
-    QuickDemoLoginSheet.show(context, (user) {
-      controller.loginWithDemo(user);
-    });
+    controller.signInWithGoogle();
   }
 
   /// Clean separated bottom sheet for Email & Password authentication & registration
