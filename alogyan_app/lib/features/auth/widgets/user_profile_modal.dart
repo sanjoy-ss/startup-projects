@@ -197,9 +197,9 @@ class UserProfileModal extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // Demo Profile Switcher (Accessible after login)
+            // Institution & Account Details
             const Text(
-              'EXPLORE OTHER DEMO ROLES',
+              'INSTITUTE & ACCOUNT METRICS',
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w800,
@@ -208,53 +208,22 @@ class UserProfileModal extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: UserModel.demoProfiles.map((demo) {
-                final isCurrent = user.uid == demo.uid;
-                return ActionChip(
-                  avatar: CircleAvatar(
-                    backgroundColor: isCurrent
-                        ? AlogyanColors.primary
-                        : AlogyanColors.surfaceMuted,
-                    child: Text(
-                      demo.initials,
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: isCurrent
-                            ? Colors.white
-                            : AlogyanColors.textPrimary,
-                      ),
-                    ),
-                  ),
-                  label: Text(
-                    '${demo.name.split(' ').first} (${demo.roleDisplay})',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: isCurrent ? FontWeight.w700 : FontWeight.w500,
-                      color: isCurrent
-                          ? AlogyanColors.primary
-                          : AlogyanColors.textPrimary,
-                    ),
-                  ),
-                  backgroundColor: isCurrent
-                      ? AlogyanColors.primaryLight
-                      : AlogyanColors.surfaceMuted,
-                  side: BorderSide(
-                    color: isCurrent
-                        ? AlogyanColors.primary
-                        : AlogyanColors.border,
-                  ),
-                  onPressed: () {
-                    if (!isCurrent) {
-                      Navigator.pop(context);
-                      authController.loginWithDemo(demo);
-                    }
-                  },
-                );
-              }).toList(),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AlogyanColors.surfaceMuted,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AlogyanColors.border),
+              ),
+              child: Column(
+                children: [
+                  _buildInfoRow(LucideIcons.building, 'Tenant / Institute ID', user.instituteId),
+                  const SizedBox(height: 8),
+                  _buildInfoRow(LucideIcons.shieldCheck, 'Access Tier', user.roleDisplay),
+                  const SizedBox(height: 8),
+                  _buildInfoRow(LucideIcons.checkCircle, 'Account Status', user.status.toUpperCase()),
+                ],
+              ),
             ),
 
             const SizedBox(height: 24),
