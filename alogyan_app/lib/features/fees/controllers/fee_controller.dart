@@ -6,7 +6,7 @@ class FeeController extends GetxController {
   final FeeRepository? repository;
 
   final Rxn<StudentItem> selectedStudent = Rxn<StudentItem>();
-  final RxString amount = '2000'.obs;
+  final RxString amount = '0'.obs;
   final RxString paymentMode = 'upi'.obs; // 'upi' | 'cash'
   final RxBool isProcessing = false.obs;
 
@@ -15,19 +15,29 @@ class FeeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    syncWithStudents();
+  }
+
+  void syncWithStudents() {
     final studentsCtrl = Get.isRegistered<StudentsController>() ? Get.find<StudentsController>() : null;
     if (studentsCtrl != null && studentsCtrl.allStudents.isNotEmpty) {
-      final defaultStudent = studentsCtrl.allStudents.firstWhere(
+      final defaultStudent = studentsCtrl.allStudents.firstWhereOrNull(
         (s) => s.dueAmount > 0,
-        orElse: () => studentsCtrl.allStudents.first,
-      );
+      ) ?? studentsCtrl.allStudents.first;
       selectStudent(defaultStudent);
+    } else {
+      selectedStudent.value = null;
+      amount.value = '0';
     }
   }
 
-  void selectStudent(StudentItem student) {
+  void selectStudent(StudentItem? student) {
     selectedStudent.value = student;
-    amount.value = student.dueAmount > 0 ? student.dueAmount.toString() : '2000';
+    if (student != null) {
+      amount.value = student.dueAmount > 0 ? student.dueAmount.toString() : '0';
+    } else {
+      amount.value = '0';
+    }
   }
 
   void setPaymentMode(String mode) {
@@ -40,8 +50,19 @@ class FeeController extends GetxController {
 
   Future<void> confirmPayment() async {
     final student = selectedStudent.value;
-    final studentName = student?.name ?? 'Aarav Sharma';
-    final studentId = student?.id ?? '1';
+    if (student == null) {
+      if (Get.context != null) {
+        Get.snackbar(
+          'No Student Selected',
+          'Please select a student to record fee payment.',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
+      return;
+    }
+
+    final studentName = student.name;
+    final studentId = student.id;
     final paidAmountInt = int.tryParse(amount.value) ?? 0;
 
     isProcessing.value = true;
@@ -62,11 +83,13 @@ class FeeController extends GetxController {
     }
 
     isProcessing.value = false;
-    Get.snackbar(
-      'Payment Recorded',
-      receiptMsg,
-      snackPosition: SnackPosition.BOTTOM,
-      duration: const Duration(seconds: 4),
-    );
+    if (Get.context != null) {
+      Get.snackbar(
+        'Payment Recorded',
+        receiptMsg,
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 4),
+      );
+    }
   }
 }
