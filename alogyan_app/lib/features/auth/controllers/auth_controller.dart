@@ -249,38 +249,41 @@ class AuthController extends GetxController {
     }
   }
 
-  // 3. Quick Demo Profile Flow (One-Tap Test Access)
-  Future<void> loginWithDemo(UserModel demoProfile) async {
+
+
+  // 4. Google Sign-In Flow
+  Future<void> signInWithGoogle() async {
     try {
       isLoading.value = true;
       errorMessage.value = '';
 
-      final activeUser = demoProfile.copyWith(lastLoginAt: DateTime.now());
-      await authRepository.saveUserToCache(activeUser);
-
-      currentUser.value = activeUser;
-      _syncApiClient(activeUser);
-
-      // Pre-fill controllers for convenience
-      phoneController.text = activeUser.phone.replaceAll('+91', '').trim();
-      emailController.text = activeUser.email;
+      final user = await authRepository.signInWithGoogle();
+      currentUser.value = user;
+      _syncApiClient(user);
 
       if (Get.key.currentState != null) {
         Get.offAll(() => const MainNavigationShell());
         Get.snackbar(
-          'Demo Profile Active',
-          'Signed in as ${activeUser.name} (${activeUser.roleDisplay})',
+          'Welcome, ${user.name}',
+          'Signed in with Google to ${user.instituteName}',
           snackPosition: SnackPosition.BOTTOM,
         );
       }
     } catch (e) {
-      errorMessage.value = 'Error loading demo profile: $e';
+      errorMessage.value = e.toString();
+      if (Get.context != null) {
+        Get.snackbar(
+          'Google Sign-In',
+          e.toString(),
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
     } finally {
       isLoading.value = false;
     }
   }
 
-  // 4. Branch Switcher
+  // 5. Branch Switcher
   Future<void> switchBranch(String branchId, String branchName) async {
     final user = currentUser.value;
     if (user == null) return;
