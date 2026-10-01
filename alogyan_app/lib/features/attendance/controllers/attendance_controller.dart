@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import '../../students/controllers/students_controller.dart';
 import '../data/repositories/attendance_repository.dart';
 
 class AttendanceStudent {
@@ -18,14 +19,7 @@ class AttendanceStudent {
 class AttendanceController extends GetxController {
   final AttendanceRepository? repository;
 
-  final RxList<AttendanceStudent> students = <AttendanceStudent>[
-    AttendanceStudent(id: '1', name: 'Aarav Sharma', roll: '101', status: 'present'),
-    AttendanceStudent(id: '2', name: 'Diya Sen', roll: '102', status: 'present'),
-    AttendanceStudent(id: '3', name: 'Ishaan Roy', roll: '103', status: 'absent'),
-    AttendanceStudent(id: '4', name: 'Meera Patel', roll: '104', status: 'present'),
-    AttendanceStudent(id: '5', name: 'Rohan Das', roll: '105', status: 'present'),
-  ].obs;
-
+  final RxList<AttendanceStudent> students = <AttendanceStudent>[].obs;
   final RxBool isSubmitting = false.obs;
 
   AttendanceController({this.repository});
@@ -33,7 +27,18 @@ class AttendanceController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    final repo = repository ?? (Get.isRegistered<AttendanceRepository>() ? Get.find<AttendanceRepository>() : null);
+    syncRosterFromStudents();
+
+    if (Get.isRegistered<StudentsController>()) {
+      ever(Get.find<StudentsController>().allStudents, (_) {
+        syncRosterFromStudents();
+      });
+    }
+
+    final repo = repository ??
+        (Get.isRegistered<AttendanceRepository>()
+            ? Get.find<AttendanceRepository>()
+            : null);
     if (repo != null) {
       final today = DateTime.now().toIso8601String().substring(0, 10);
       repo.streamAttendance('class_10_physics', today).listen((records) {
@@ -49,10 +54,27 @@ class AttendanceController extends GetxController {
     }
   }
 
+  void syncRosterFromStudents() {
+    if (Get.isRegistered<StudentsController>()) {
+      final studentsCtrl = Get.find<StudentsController>();
+      final currentMap = {for (final s in students) s.id: s.status};
+      final newStudents = studentsCtrl.allStudents.map((s) {
+        return AttendanceStudent(
+          id: s.id,
+          name: s.name,
+          roll: s.id,
+          status: currentMap[s.id] ?? 'present',
+        );
+      }).toList();
+      students.assignAll(newStudents);
+    }
+  }
+
   int get presentCount => students.where((s) => s.status == 'present').length;
   int get totalCount => students.length;
 
   void toggleStatus(int index) {
+    if (index < 0 || index >= students.length) return;
     final student = students[index];
     if (student.status == 'present') {
       student.status = 'absent';
@@ -72,6 +94,15 @@ class AttendanceController extends GetxController {
   }
 
   Future<void> submitAttendance() async {
+    if (students.isEmpty) {
+      Get.snackbar(
+        'Empty Roster',
+        'Cannot record attendance when no students are enrolled in this batch.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
     isSubmitting.value = true;
     final records = <String, String>{};
     for (final s in students) {
@@ -79,7 +110,10 @@ class AttendanceController extends GetxController {
     }
 
     final today = DateTime.now().toIso8601String().substring(0, 10);
-    final repo = repository ?? (Get.isRegistered<AttendanceRepository>() ? Get.find<AttendanceRepository>() : null);
+    final repo = repository ??
+        (Get.isRegistered<AttendanceRepository>()
+            ? Get.find<AttendanceRepository>()
+            : null);
 
     if (repo != null) {
       await repo.saveAttendance('class_10_physics', today, records);

@@ -83,6 +83,50 @@ class QuickAttendanceScreen extends StatelessWidget {
         Expanded(
           child: Obx(() {
             final students = controller.students;
+            if (students.isEmpty) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(32.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: const BoxDecoration(
+                          color: AlogyanColors.surfaceMuted,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          LucideIcons.userCheck,
+                          size: 36,
+                          color: AlogyanColors.textSecondary,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'No Students in Roster',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: AlogyanColors.textPrimary,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 6),
+                      const Text(
+                        'Once students are enrolled in this batch via the Alogyan CMS, they will appear here for 10-second rapid attendance.',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: AlogyanColors.textSecondary,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+
             return ListView.separated(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               itemCount: students.length,
@@ -106,7 +150,9 @@ class QuickAttendanceScreen extends StatelessWidget {
                   leading: CircleAvatar(
                     backgroundColor: AlogyanColors.surfaceMuted,
                     child: Text(
-                      student.name.substring(0, 1),
+                      student.name.isNotEmpty
+                          ? student.name.substring(0, 1).toUpperCase()
+                          : 'S',
                       style: const TextStyle(fontWeight: FontWeight.bold, color: AlogyanColors.textPrimary),
                     ),
                   ),
