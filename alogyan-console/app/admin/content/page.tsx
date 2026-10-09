@@ -82,7 +82,7 @@ export default function ContentManagement() {
         description: editDescription
       });
 
-      setSaveMessage('Changes saved successfully! ✓');
+      setSaveMessage('Changes saved successfully.');
       setTimeout(() => setSaveMessage(''), 3000);
     } catch (error) {
       console.error('Error saving:', error);
@@ -108,144 +108,160 @@ export default function ContentManagement() {
       editDescription !== selectedPage.description);
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h2 className="text-3xl font-bold text-gray-900">Content Management</h2>
-        <p className="text-gray-600 mt-1">Edit static pages and site content</p>
+    <div className="w-full space-y-4">
+      {/* Sub-toolbar */}
+      <div className="flex items-center justify-between pb-1">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-bold uppercase tracking-wider text-gray-500 font-poppins">
+            Content Publications
+          </span>
+          <span className="text-xs text-gray-400 font-medium">({pages.length} pages managed)</span>
+        </div>
+
+        {saveMessage && (
+          <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200/60 animate-fade-in">
+            {saveMessage}
+          </span>
+        )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Pages List */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 h-fit">
-          <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <FileText className="h-5 w-5 text-brand-coral" />
-            Pages
-          </h3>
-          <div className="space-y-2">
-            {pages.map((page) => (
-              <button
-                key={page.slug}
-                onClick={() => setSelectedPage(page)}
-                className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-200 ${
-                  selectedPage?.slug === page.slug
-                    ? 'bg-brand-gradient text-white shadow-lg'
-                    : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
-                }`}
-              >
-                <p className="font-semibold text-sm">{page.title}</p>
-                <p className={`text-xs mt-1 ${selectedPage?.slug === page.slug ? 'text-white/80' : 'text-gray-600'}`}>
-                  {page.slug}
-                </p>
-              </button>
-            ))}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+        {/* Pages Navigation List */}
+        <div className="bg-white border border-gray-200/80 rounded-xl p-4 shadow-xs space-y-3">
+          <div className="flex items-center justify-between pb-2 border-b border-gray-100">
+            <h3 className="font-bold text-xs uppercase tracking-wider text-gray-700 flex items-center gap-2 font-poppins">
+              <FileText className="h-4 w-4 text-[#C91F26]" />
+              Static Documents
+            </h3>
+            <span className="text-[10px] font-semibold bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">
+              CMS
+            </span>
+          </div>
+
+          <div className="space-y-1">
+            {pages.map((page) => {
+              const isActive = selectedPage?.slug === page.slug;
+              return (
+                <button
+                  key={page.slug}
+                  onClick={() => setSelectedPage(page)}
+                  className={`w-full text-left px-3 py-2.5 rounded-lg transition-all duration-150 relative ${
+                    isActive
+                      ? 'bg-red-50/70 text-[#C91F26] font-semibold border border-red-200/60 shadow-xs'
+                      : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900 border border-transparent'
+                  }`}
+                >
+                  <p className="text-xs font-bold truncate">{page.title}</p>
+                  <p className={`text-[10px] mt-0.5 truncate font-mono ${isActive ? 'text-red-600/80' : 'text-gray-400'}`}>
+                    /{page.slug}
+                  </p>
+                </button>
+              );
+            })}
           </div>
         </div>
 
         {/* Content Editor */}
-        <div className="lg:col-span-3 bg-white rounded-2xl shadow-lg p-6">
+        <div className="lg:col-span-3 bg-white border border-gray-200/80 rounded-xl p-5 shadow-xs">
           {selectedPage ? (
             <div className="space-y-4">
+              {/* Title & Slug Header */}
+              <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+                <div>
+                  <h3 className="text-sm font-bold text-gray-900 font-poppins">{selectedPage.title}</h3>
+                  <p className="text-[11px] text-gray-400 font-mono">Route: /{selectedPage.slug}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setShowPreview(!showPreview)}
+                    className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors shadow-xs ${
+                      showPreview
+                        ? 'bg-gray-900 text-white border-gray-900'
+                        : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+                    }`}
+                  >
+                    {showPreview ? 'Back to Editor' : 'Live Preview'}
+                  </button>
+                </div>
+              </div>
+
               {/* Title Input */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Page Title</label>
+              <div className="space-y-1">
+                <label className="block text-xs font-semibold text-gray-700">Page Title</label>
                 <input
                   type="text"
                   value={editTitle}
                   onChange={(e) => setEditTitle(e.target.value)}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-brand-coral"
+                  className="w-full px-3 py-2 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#C91F26] focus:border-[#C91F26] transition-colors"
                   placeholder="Page title"
                 />
               </div>
 
-              {/* Description Input */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Meta Description</label>
+              {/* Meta Description Input */}
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-semibold text-gray-700">Meta Description (SEO)</label>
+                  <span className="text-[10px] text-gray-400 font-mono">{editDescription.length}/160</span>
+                </div>
                 <input
                   type="text"
                   value={editDescription}
                   onChange={(e) => setEditDescription(e.target.value)}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-brand-coral"
-                  placeholder="SEO meta description"
+                  className="w-full px-3 py-2 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#C91F26] focus:border-[#C91F26] transition-colors"
+                  placeholder="Short summary for search results"
                   maxLength={160}
                 />
-                <p className="text-xs text-gray-500 mt-1">{editDescription.length}/160</p>
               </div>
 
-              {/* Content Editor */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="block text-sm font-semibold text-gray-700">Content</label>
-                  <button
-                    onClick={() => setShowPreview(!showPreview)}
-                    className="text-xs font-bold text-brand-coral hover:text-brand-purple transition-colors"
-                  >
-                    {showPreview ? 'Edit' : 'Preview'}
-                  </button>
-                </div>
-
+              {/* Content Body Editor or Preview */}
+              <div className="space-y-1">
+                <label className="block text-xs font-semibold text-gray-700">Markdown Content</label>
                 {showPreview ? (
-                  <div className="bg-gray-50 border-2 border-gray-200 rounded-xl p-6 min-h-64">
-                    <div className="prose prose-sm max-w-none">
-                      {editContent.split('\n').map((para, i) => (
-                        <p key={i} className="text-gray-700 mb-4">
-                          {para}
-                        </p>
-                      ))}
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-5 min-h-[260px] text-xs leading-relaxed text-gray-700">
+                    <div className="space-y-3">
+                      {editContent.split('\n').map((para, i) =>
+                        para.trim() ? (
+                          <p key={i} className="text-gray-700">
+                            {para}
+                          </p>
+                        ) : null
+                      )}
                     </div>
                   </div>
                 ) : (
                   <textarea
                     value={editContent}
                     onChange={(e) => setEditContent(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-brand-coral min-h-64 font-mono text-sm"
-                    placeholder="Enter your content here. Supports markdown and plain text."
+                    className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#C91F26] focus:border-[#C91F26] min-h-[260px] font-mono text-xs leading-relaxed text-gray-800 transition-colors"
+                    placeholder="Enter page content here. Supports plain text and markdown paragraphs."
                   />
                 )}
               </div>
 
-              {/* Save Message */}
-              {saveMessage && (
-                <div className={`p-4 rounded-xl text-sm font-medium ${
-                  saveMessage.includes('success')
-                    ? 'bg-green-100 text-green-700'
-                    : 'bg-red-100 text-red-700'
-                }`}>
-                  {saveMessage}
-                </div>
-              )}
-
-              {/* Info Box */}
-              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex gap-3">
-                <AlertCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                <div className="text-sm text-blue-700">
-                  <p className="font-bold mb-1">Preview your changes</p>
-                  <p>Click the Preview button to see how your content will look to users.</p>
-                </div>
-              </div>
-
               {/* Action Buttons */}
-              <div className="flex gap-4 pt-4 border-t border-gray-200">
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-gray-100">
                 <button
-                  onClick={handleSave}
+                  type="button"
+                  onClick={handleReset}
                   disabled={!isChanged || isSaving}
-                  className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-brand-gradient text-white font-bold rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                  className="px-4 py-2 border border-gray-200 text-xs font-semibold text-gray-700 hover:bg-gray-50 rounded-lg transition-colors disabled:opacity-40"
                 >
-                  <Save className="h-5 w-5" />
-                  {isSaving ? 'Saving...' : 'Save Changes'}
+                  Discard Changes
                 </button>
                 <button
-                  onClick={handleReset}
-                  disabled={!isChanged}
-                  className="px-6 py-3 border-2 border-gray-200 text-gray-900 font-bold rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  type="button"
+                  onClick={handleSave}
+                  disabled={!isChanged || isSaving}
+                  className="inline-flex items-center gap-1.5 px-5 py-2 bg-[#C91F26] hover:bg-[#A81920] text-white text-xs font-semibold rounded-lg shadow-xs transition-colors disabled:opacity-40"
                 >
-                  Reset
+                  <Save className="h-3.5 w-3.5" />
+                  <span>{isSaving ? 'Saving...' : 'Publish Changes'}</span>
                 </button>
               </div>
             </div>
           ) : (
-            <div className="text-center py-12">
-              <p className="text-gray-600">Select a page to edit</p>
+            <div className="text-center py-16 text-xs text-gray-500">
+              Select a page from the left to edit its content.
             </div>
           )}
         </div>

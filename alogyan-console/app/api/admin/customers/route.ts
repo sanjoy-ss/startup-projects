@@ -26,12 +26,43 @@ async function post(req:NextRequest){
   return {id:tenantId};
  });return NextResponse.json(result,{status:201});
 }
-async function patch(req:NextRequest){
- const {id,status,reason}=await req.json();
- if(typeof id!=='string'||!/^[a-zA-Z0-9_-]{1,128}$/.test(id)||!['active','suspended'].includes(status)||typeof reason!=='string'||reason.trim().length<5)return NextResponse.json({error:'Valid customer, status and reason required'},{status:400});
- const ref=adminDb.collection('tenants').doc(id);
- await adminDb.runTransaction(async tx=>{const doc=await tx.get(ref);if(!doc.exists)throw new Error('Customer missing');if(doc.data()?.status!==status)tx.update(ref,{status,statusReason:reason.slice(0,500),updatedAt:new Date()});});
- return NextResponse.json({success:true});
+async function patch(req: NextRequest) {
+  const body = await req.json();
+  const { id, status, reason, planId, accessUntil, subscriptionStatus } = body;
+
+  if (typeof id !== 'string' || !/^[a-zA-Z0-9_-]{1,128}$/.test(id)) {
+    return NextResponse.json({ error: 'Valid customer ID required' }, { status: 400 });
+  }
+
+  // If status is provided, validate reason
+  if (status && (!['active', 'suspended'].includes(status) || typeof reason !== 'string' || reason.trim().length < 5)) {
+    return NextResponse.json({ error: 'Valid status (active/suspended) and reason (min 5 chars) required' }, { status: 400 });
+  }
+
+  const ref = adminDb.collection('tenants').doc(id);
+  await adminDb.runTransaction(async (tx) => {
+    const doc = await tx.get(ref);
+    if (!doc.exists) throw new Error('Customer missing');
+    const existing = doc.data() || {};
+    const updates: Record<string, unknown> = { updatedAt: new Date() };
+
+    if (status) {
+      updates.status = status;
+      if (reason) updates.statusReason = reason.slice(0, 500);
+    }
+
+    if (planId !== undefined || accessUntil !== undefined || subscriptionStatus !== undefined) {
+      const sub = { ...(existing.subscription || {}) };
+      if (typeof planId === 'string') sub.planId = planId;
+      if (typeof accessUntil === 'number') sub.accessUntil = accessUntil;
+      if (typeof subscriptionStatus === 'string') sub.status = subscriptionStatus;
+      updates.subscription = sub;
+    }
+
+    tx.update(ref, updates);
+  });
+
+  return NextResponse.json({ success: true });
 }
 export const GET=withConsole('can_view_customers',get);
 export const POST=withConsole('can_manage_billing',post);
