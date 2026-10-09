@@ -29,6 +29,49 @@
             {
               "client_id": "62405982079-fllu720ev074vrgai7dp9fj4qn9gkeiu.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "62405982079-rubp3pq99haetut8vp7pjbsnnfcjl28i.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.alogyan.alogyanApp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:62405982079:android:c0aea82113e63f5e038c4a",
+        "android_client_info": {
+          "package_name": "com.alogyan.official"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "62405982079-fllu720ev074vrgai7dp9fj4qn9gkeiu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8AptPazF6c06fKLeoH6zfGrHQAJvu-Nw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "62405982079-fllu720ev074vrgai7dp9fj4qn9gkeiu.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "62405982079-rubp3pq99haetut8vp7pjbsnnfcjl28i.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.alogyan.alogyanApp"
+              }
             }
           ]
         }

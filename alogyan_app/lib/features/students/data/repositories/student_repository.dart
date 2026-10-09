@@ -18,10 +18,18 @@ class StudentRepository {
     // 1. Get initial cached list from Hive (0ms load)
     final cachedData = cacheService.getCachedStudents();
     final initialList = cachedData.map((map) {
+      final rawBatchIds = map['batchIds'];
+      final List<String> batchIds = [];
+      if (rawBatchIds is List) {
+        for (final b in rawBatchIds) {
+          if (b != null) batchIds.add(b.toString());
+        }
+      }
       return StudentItem(
         id: map['id']?.toString() ?? '',
         name: (map['name'] as String?) ?? 'Unnamed',
         batch: (map['batch'] as String?) ?? 'General',
+        batchIds: batchIds,
         phone: (map['phone'] as String?) ?? '',
         dueAmount: (map['dueAmount'] as int?) ?? 0,
       );
@@ -42,10 +50,18 @@ class StudentRepository {
         (snapshot) {
           final liveStudents = snapshot.docs.map((doc) {
             final data = doc.data();
+            final rawBatchIds = data['batchIds'];
+            final List<String> batchIds = [];
+            if (rawBatchIds is List) {
+              for (final b in rawBatchIds) {
+                if (b != null) batchIds.add(b.toString());
+              }
+            }
             return StudentItem(
               id: doc.id,
               name: (data['name'] as String?) ?? 'Unnamed',
               batch: (data['batch'] as String?) ?? 'General',
+              batchIds: batchIds,
               phone: (data['phone'] as String?) ?? '',
               dueAmount: (data['dueAmount'] as int?) ?? 0,
             );

@@ -49,19 +49,35 @@ class AttendanceRepository {
   }
 
   /// Optimistically writes attendance locally and queues for background sync
-  Future<void> saveAttendance(String batchId, String date, Map<String, String> records) async {
+  Future<void> saveAttendance(
+    String batchId,
+    String date,
+    Map<String, String> records, {
+    String? instituteId,
+    String? teacherId,
+    String? branchId,
+    Map<String, String>? notes,
+  }) async {
     // 1. Cache immediately in Hive
     await cacheService.cacheAttendance(batchId, date, records);
 
-    // 2. Create idempotent sync action
+    // 2. Create idempotent sync action matching CMS API endpoint
+    final payload = <String, dynamic>{
+      'batchId': batchId,
+      'date': date,
+      'records': records,
+      'notes': notes ?? {},
+      'markedAt': DateTime.now().toIso8601String(),
+      'updatedAt': DateTime.now().toIso8601String(),
+    };
+    if (instituteId != null) payload['instituteId'] = instituteId;
+    if (teacherId != null) payload['teacherId'] = teacherId;
+    if (branchId != null) payload['branchId'] = branchId;
+
     final action = SyncAction(
       type: 'MARK_ATTENDANCE',
-      endpoint: '/api/attendance',
-      payload: {
-        'batchId': batchId,
-        'date': date,
-        'records': records,
-      },
+      endpoint: '/api/attendance/$batchId',
+      payload: payload,
     );
 
     // 3. Queue into sync engine

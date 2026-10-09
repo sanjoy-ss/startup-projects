@@ -2,6 +2,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 class CacheService {
   static const String studentsBoxName = 'students_box';
+  static const String batchesBoxName = 'batches_box';
   static const String attendanceBoxName = 'attendance_box';
   static const String feesBoxName = 'fees_box';
   static const String syncBoxName = 'sync_actions_box';
@@ -9,6 +10,7 @@ class CacheService {
   static const String settingsBoxName = 'settings_box';
 
   late Box _studentsBox;
+  late Box _batchesBox;
   late Box _attendanceBox;
   late Box _feesBox;
   late Box _syncBox;
@@ -16,6 +18,7 @@ class CacheService {
   late Box _settingsBox;
 
   Box get studentsBox => _studentsBox;
+  Box get batchesBox => _batchesBox;
   Box get attendanceBox => _attendanceBox;
   Box get feesBox => _feesBox;
   Box get syncBox => _syncBox;
@@ -24,6 +27,7 @@ class CacheService {
 
   Future<void> init() async {
     _studentsBox = await Hive.openBox(studentsBoxName);
+    _batchesBox = await Hive.openBox(batchesBoxName);
     _attendanceBox = await Hive.openBox(attendanceBoxName);
     _feesBox = await Hive.openBox(feesBoxName);
     _syncBox = await Hive.openBox(syncBoxName);
@@ -61,6 +65,23 @@ class CacheService {
   Future<void> cacheStudents(List<Map<String, dynamic>> list) async {
     for (final s in list) {
       await _studentsBox.put(s['id'], s);
+    }
+  }
+
+  List<Map<String, dynamic>> getCachedBatches() {
+    final list = <Map<String, dynamic>>[];
+    for (int i = 0; i < _batchesBox.length; i++) {
+      final item = _batchesBox.getAt(i);
+      if (item is Map) {
+        list.add(Map<String, dynamic>.from(item));
+      }
+    }
+    return list;
+  }
+
+  Future<void> cacheBatches(List<Map<String, dynamic>> list) async {
+    for (final b in list) {
+      await _batchesBox.put(b['id'], b);
     }
   }
 

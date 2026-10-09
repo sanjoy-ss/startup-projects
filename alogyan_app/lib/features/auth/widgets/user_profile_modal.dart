@@ -5,6 +5,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/widgets/mascot_holding_sheet_wrapper.dart';
 import '../controllers/auth_controller.dart';
+import '../models/user_model.dart';
 
 class UserProfileModal extends StatelessWidget {
   const UserProfileModal({super.key});
@@ -140,7 +141,28 @@ class UserProfileModal extends StatelessWidget {
               ],
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              height: 40,
+              child: OutlinedButton.icon(
+                onPressed: () => _showEditProfileDialog(context, authController, user),
+                icon: const Icon(LucideIcons.userPen, size: 16, color: AlogyanColors.primary),
+                label: const Text(
+                  'Change Profile Details',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: AlogyanColors.primary,
+                  ),
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: AlogyanColors.primary, width: 1.0),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
             const Divider(color: AlogyanColors.border, height: 1),
             const SizedBox(height: 16),
 
@@ -334,6 +356,137 @@ class UserProfileModal extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  void _showEditProfileDialog(
+    BuildContext context,
+    AuthController authController,
+    UserModel user,
+  ) {
+    final nameCtrl = TextEditingController(text: user.name);
+    final phoneCtrl = TextEditingController(text: user.phone);
+    final desigCtrl = TextEditingController(text: user.designation);
+    final subjectCtrl = TextEditingController(text: user.subject);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
+        ),
+        child: Container(
+          decoration: const BoxDecoration(
+            color: AlogyanColors.surface,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: AlogyanColors.border,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Change Profile Details',
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                      color: AlogyanColors.textPrimary,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(LucideIcons.x, size: 20),
+                    onPressed: () => Navigator.of(sheetContext).pop(),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: nameCtrl,
+                decoration: InputDecoration(
+                  labelText: 'Full Name',
+                  prefixIcon: const Icon(LucideIcons.user, size: 18),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: phoneCtrl,
+                keyboardType: TextInputType.phone,
+                decoration: InputDecoration(
+                  labelText: 'Mobile Phone',
+                  prefixIcon: const Icon(LucideIcons.phone, size: 18),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: desigCtrl,
+                decoration: InputDecoration(
+                  labelText: 'Designation / Role',
+                  prefixIcon: const Icon(LucideIcons.briefcase, size: 18),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: subjectCtrl,
+                decoration: InputDecoration(
+                  labelText: 'Assigned Subjects',
+                  prefixIcon: const Icon(LucideIcons.bookOpen, size: 18),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton.icon(
+                  onPressed: () async {
+                    if (nameCtrl.text.trim().isEmpty) return;
+                    await authController.updateProfile(
+                      name: nameCtrl.text,
+                      phone: phoneCtrl.text,
+                      designation: desigCtrl.text,
+                      subject: subjectCtrl.text,
+                    );
+                    if (sheetContext.mounted) {
+                      Navigator.of(sheetContext).pop();
+                    }
+                  },
+                  icon: const Icon(LucideIcons.check, size: 18),
+                  label: const Text(
+                    'Save Profile Changes',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AlogyanColors.primary,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

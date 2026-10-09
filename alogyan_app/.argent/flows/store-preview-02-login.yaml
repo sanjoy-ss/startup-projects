@@ -1,0 +1,22 @@
+executionPrerequisite: >-
+  App on Login screen with mascot header, phone input, and educator auth options.
+
+steps:
+  - await:
+      visible:
+        text: Welcome Back!
+  - wait: 1200
+  - tap:
+      text: Explore with Demo Account
+  - await:
+      visible:
+        text: Demo Educator Accounts
+  - wait: 1000
+  - tap:
+      text: Dr. Sanjoy Sarkar
+  - await:
+      visible:
+        text: Classroom Overview
+  - wait: 800
+  - await:
+      idle: true

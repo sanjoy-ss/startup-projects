@@ -1,0 +1,27 @@
+executionPrerequisite: >-
+  App logged in and settled on the Classroom Overview dashboard.
+
+steps:
+  - await:
+      visible:
+        text: Classroom Overview
+  - wait: 1200
+  - tap:
+      text: Take Attendance
+  - await:
+      visible:
+        text: Mark All Present
+  - wait: 1200
+  - tap:
+      text: Mark All Present
+  - wait: 1000
+  - echo: Hit the Fees bottom navigation tab
+  - tap:
+      x: 0.62
+      y: 0.94
+  - await:
+      visible:
+        text: Quick Fee Collection
+  - wait: 1500
+  - await:
+      idle: true

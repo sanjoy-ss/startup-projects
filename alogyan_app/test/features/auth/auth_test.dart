@@ -284,5 +284,40 @@ void main() {
       expect(controller.currentUser.value, isNull);
       expect(fakeCache.getCachedUser(), isNull);
     });
+
+    test('updateProfile modifies user details in state and cache', () async {
+      final fakeCache = FakeCacheService();
+      final authRepo = AuthRepository(cacheService: fakeCache);
+      final controller = AuthController(authRepository: authRepo);
+
+      const testUser = UserModel(
+        uid: 'u1',
+        name: 'Dr. Sanjoy',
+        email: 'sanjoy@alogyan.com',
+        phone: '+91 9876543210',
+        instituteId: 'inst_1',
+        instituteName: 'Alogyan Academy',
+        activeBranchId: 'b1',
+        activeBranchName: 'Main Campus',
+        role: 'owner',
+        designation: 'Director',
+        subject: 'Physics',
+      );
+      controller.currentUser.value = testUser;
+      await authRepo.saveUserToCache(testUser);
+
+      await controller.updateProfile(
+        name: 'Dr. Sanjoy Sarkar',
+        phone: '+91 9999988888',
+        designation: 'Managing Director',
+        subject: 'Advanced Physics & Maths',
+      );
+
+      expect(controller.currentUser.value?.name, 'Dr. Sanjoy Sarkar');
+      expect(controller.currentUser.value?.phone, '+91 9999988888');
+      expect(controller.currentUser.value?.designation, 'Managing Director');
+      expect(controller.currentUser.value?.subject, 'Advanced Physics & Maths');
+      expect(fakeCache.getCachedUser()?['name'], 'Dr. Sanjoy Sarkar');
+    });
   });
 }

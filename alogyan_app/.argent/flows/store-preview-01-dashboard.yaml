@@ -1,0 +1,13 @@
+executionPrerequisite: >-
+  App freshly restarted by goldie, settled on the dashboard screen.
+steps:
+  - await:
+      visible:
+        text: Classroom Overview
+  - wait: 1500
+  - tap:
+      text: Attendance
+  - await:
+      visible:
+        text: Class 10 - Physics Batch
+  - wait: 1500

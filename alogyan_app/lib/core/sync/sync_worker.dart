@@ -71,12 +71,18 @@ class SyncWorker extends GetxService {
             // Direct Cloud Firestore Synchronization (FlutterFire)
             final firestore = FirebaseFirestore.instance;
             if (action.type == 'MARK_ATTENDANCE') {
-              final batchId = action.payload['batchId'] ?? 'class_10_physics';
+              final batchId = action.payload['batchId'] ?? 'general';
               final date = action.payload['date'] ?? DateTime.now().toIso8601String().substring(0, 10);
               await firestore.collection('attendance').doc('${batchId}_$date').set({
                 'batchId': batchId,
                 'date': date,
                 'records': action.payload['records'],
+                if (action.payload['notes'] != null) 'notes': action.payload['notes'],
+                if (action.payload['instituteId'] != null) 'instituteId': action.payload['instituteId'],
+                if (action.payload['teacherId'] != null) 'teacherId': action.payload['teacherId'],
+                if (action.payload['branchId'] != null) 'branchId': action.payload['branchId'],
+                'markedAt': action.payload['markedAt'] ?? DateTime.now().toIso8601String(),
+                'updatedAt': action.payload['updatedAt'] ?? DateTime.now().toIso8601String(),
                 'syncedAt': FieldValue.serverTimestamp(),
               }, SetOptions(merge: true));
             } else if (action.type == 'COLLECT_FEE') {

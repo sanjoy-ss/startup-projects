@@ -1,46 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+
 import '../../../core/constants/colors.dart';
 import '../../../core/sync/sync_worker.dart';
 import '../../../shared/widgets/alogyan_app_bar.dart';
 import '../../../shared/widgets/offline_banner.dart';
-import '../../attendance/screens/quick_attendance_screen.dart';
+import '../../auth/screens/profile_screen.dart';
+import '../../batches/screens/batches_screen.dart';
 import '../../dashboard/screens/dashboard_screen.dart';
 import '../../fees/screens/quick_fee_screen.dart';
-import '../../students/screens/students_screen.dart';
 import '../controllers/navigation_controller.dart';
+import '../widgets/alogyan_drawer.dart';
 
 class MainNavigationShell extends StatelessWidget {
   const MainNavigationShell({super.key});
 
   static const List<Widget> _pages = [
     DashboardScreen(),
-    QuickAttendanceScreen(),
+    BatchesScreen(),
     QuickFeeScreen(),
-    StudentsScreen(),
+    ProfileScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
     final navController = Get.put(NavigationController());
-    final syncWorker = Get.isRegistered<SyncWorker>() ? Get.find<SyncWorker>() : null;
+    final syncWorker = Get.isRegistered<SyncWorker>()
+        ? Get.find<SyncWorker>()
+        : null;
 
     return Scaffold(
       backgroundColor: AlogyanColors.background,
       appBar: const AlogyanAppBar(),
+      drawer: const AlogyanDrawer(),
       body: Column(
         children: [
           if (syncWorker != null)
-            Obx(() => OfflineBanner(
-                  pendingCount: syncWorker.pendingSyncCount.value,
-                  onSyncNow: syncWorker.drainQueue,
-                )),
+            Obx(
+              () => OfflineBanner(
+                pendingCount: syncWorker.pendingSyncCount.value,
+                onSyncNow: syncWorker.drainQueue,
+              ),
+            ),
           Expanded(
-            child: Obx(() => IndexedStack(
-                  index: navController.currentIndex.value,
-                  children: _pages,
-                )),
+            child: Obx(
+              () => IndexedStack(
+                index: navController.currentIndex.value,
+                children: _pages,
+              ),
+            ),
           ),
         ],
       ),
@@ -65,23 +74,39 @@ class MainNavigationShell extends StatelessWidget {
             items: const [
               BottomNavigationBarItem(
                 icon: Icon(LucideIcons.layoutDashboard, size: 20),
-                activeIcon: Icon(LucideIcons.layoutDashboard, size: 20, color: AlogyanColors.primary),
+                activeIcon: Icon(
+                  LucideIcons.layoutDashboard,
+                  size: 20,
+                  color: AlogyanColors.primary,
+                ),
                 label: 'Dashboard',
               ),
               BottomNavigationBarItem(
-                icon: Icon(LucideIcons.userCheck, size: 20),
-                activeIcon: Icon(LucideIcons.userCheck, size: 20, color: AlogyanColors.primary),
-                label: 'Attendance',
+                icon: Icon(LucideIcons.bookOpen, size: 20),
+                activeIcon: Icon(
+                  LucideIcons.bookOpen,
+                  size: 20,
+                  color: AlogyanColors.primary,
+                ),
+                label: 'Batches',
               ),
               BottomNavigationBarItem(
                 icon: Icon(LucideIcons.indianRupee, size: 20),
-                activeIcon: Icon(LucideIcons.indianRupee, size: 20, color: AlogyanColors.primary),
+                activeIcon: Icon(
+                  LucideIcons.indianRupee,
+                  size: 20,
+                  color: AlogyanColors.primary,
+                ),
                 label: 'Fees',
               ),
               BottomNavigationBarItem(
-                icon: Icon(LucideIcons.users, size: 20),
-                activeIcon: Icon(LucideIcons.users, size: 20, color: AlogyanColors.primary),
-                label: 'Students',
+                icon: Icon(LucideIcons.user, size: 20),
+                activeIcon: Icon(
+                  LucideIcons.user,
+                  size: 20,
+                  color: AlogyanColors.primary,
+                ),
+                label: 'Profile',
               ),
             ],
           ),

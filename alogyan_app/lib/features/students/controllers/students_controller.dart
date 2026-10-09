@@ -9,6 +9,7 @@ class StudentItem {
   final String id;
   final String name;
   final String batch;
+  final List<String> batchIds;
   final String phone;
   int dueAmount;
 
@@ -16,6 +17,7 @@ class StudentItem {
     required this.id,
     required this.name,
     required this.batch,
+    this.batchIds = const [],
     required this.phone,
     required this.dueAmount,
   });
@@ -24,6 +26,7 @@ class StudentItem {
         'id': id,
         'name': name,
         'batch': batch,
+        'batchIds': batchIds,
         'phone': phone,
         'dueAmount': dueAmount,
       };
@@ -75,6 +78,56 @@ class StudentsController extends GetxController {
       // Update in local Hive cache
       if (Get.isRegistered<CacheService>()) {
         Get.find<CacheService>().studentsBox.put(s.id, s.toMap());
+      }
+    }
+  }
+
+  Future<void> updateStudentProfile({
+    required String studentId,
+    required String name,
+    required String batch,
+    required String phone,
+    required int dueAmount,
+  }) async {
+    final index = allStudents.indexWhere((s) => s.id == studentId);
+    if (index != -1) {
+      final old = allStudents[index];
+      final updated = StudentItem(
+        id: old.id,
+        name: name.trim(),
+        batch: batch.trim(),
+        batchIds: old.batchIds,
+        phone: phone.trim(),
+        dueAmount: dueAmount,
+      );
+
+      allStudents[index] = updated;
+      allStudents.refresh();
+
+      // Update in local Hive cache
+      if (Get.isRegistered<CacheService>()) {
+        Get.find<CacheService>().studentsBox.put(updated.id, updated.toMap());
+      }
+
+      // Update in Firestore
+      try {
+        final firestore = repository?.firestore;
+        if (firestore != null) {
+          await firestore
+              .collection('students')
+              .doc(studentId)
+              .update(updated.toMap());
+        }
+      } catch (_) {
+        // Safe offline fallback
+      }
+
+      if (Get.context != null) {
+        Get.snackbar(
+          'Student Profile Updated',
+          'Details for $name have been saved.',
+          snackPosition: SnackPosition.BOTTOM,
+        );
       }
     }
   }

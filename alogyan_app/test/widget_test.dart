@@ -121,11 +121,11 @@ void main() {
     await tester.pumpAndSettle();
 
     // Verify MainNavigationShell is now active
-    expect(find.text('Today\'s Schedule'), findsOneWidget);
+    expect(find.text('Today\'s Classes'), findsOneWidget);
     expect(find.text('Dashboard'), findsOneWidget);
-    expect(find.text('Attendance'), findsOneWidget);
+    expect(find.text('Batches'), findsOneWidget);
     expect(find.text('Fees'), findsOneWidget);
-    expect(find.text('Students'), findsOneWidget);
+    expect(find.text('Profile'), findsOneWidget);
   });
 
   testWidgets('Email & Password bottom sheet opens and toggles between Sign In and Sign Up Free', (WidgetTester tester) async {

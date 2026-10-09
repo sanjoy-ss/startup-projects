@@ -1,0 +1,28 @@
+executionPrerequisite: >-
+  App freshly launched and settled on the Onboarding screen carousel.
+
+steps:
+  - await:
+      visible:
+        text: Smart 1-Tap Roster
+  - wait: 1200
+  - tap:
+      text: Continue
+  - await:
+      visible:
+        text: Tuition fees paid
+  - wait: 1200
+  - tap:
+      text: Continue
+  - await:
+      visible:
+        text: Engineered for
+  - wait: 1200
+  - tap:
+      text: Get Started
+  - await:
+      visible:
+        text: Welcome Back!
+  - wait: 600
+  - await:
+      idle: true

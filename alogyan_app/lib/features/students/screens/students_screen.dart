@@ -5,6 +5,7 @@ import '../../../core/constants/colors.dart';
 import '../../../shared/widgets/alogyan_card.dart';
 import '../../../shared/widgets/status_badge.dart';
 import '../controllers/students_controller.dart';
+import '../widgets/student_profile_modal.dart';
 
 class StudentsScreen extends StatelessWidget {
   const StudentsScreen({super.key});
@@ -24,20 +25,25 @@ class StudentsScreen extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text(
-                    'Student Directory',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AlogyanColors.textPrimary),
-                  ),
-                  SizedBox(height: 2),
-                  Text(
-                    '1-tap Phone Call & WhatsApp alert links',
-                    style: TextStyle(fontSize: 12, color: AlogyanColors.textSecondary),
-                  ),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Text(
+                      'Student Directory',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AlogyanColors.textPrimary),
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      '1-tap Phone Call & WhatsApp alert links',
+                      style: TextStyle(fontSize: 12, color: AlogyanColors.textSecondary),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(width: 8),
               Obx(() => Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
@@ -141,6 +147,7 @@ class StudentsScreen extends StatelessWidget {
 
                 return AlogyanCard(
                   padding: const EdgeInsets.all(14),
+                  onTap: () => StudentProfileModal.show(context, student),
                   child: Row(
                     children: [
                       CircleAvatar(
@@ -169,14 +176,19 @@ class StudentsScreen extends StatelessWidget {
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(LucideIcons.phone, size: 20, color: AlogyanColors.info),
+                        icon: const Icon(LucideIcons.phone, size: 18, color: AlogyanColors.info),
                         tooltip: 'Call Student/Parent',
                         onPressed: () => controller.makeCall(student.phone),
                       ),
                       IconButton(
-                        icon: const Icon(LucideIcons.messageCircle, size: 20, color: AlogyanColors.success),
+                        icon: const Icon(LucideIcons.messageCircle, size: 18, color: AlogyanColors.success),
                         tooltip: 'Send WhatsApp Alert',
                         onPressed: () => controller.sendWhatsApp(student.phone, student.name),
+                      ),
+                      IconButton(
+                        icon: const Icon(LucideIcons.userPen, size: 18, color: AlogyanColors.primary),
+                        tooltip: 'Change Profile',
+                        onPressed: () => StudentProfileModal.show(context, student),
                       ),
                     ],
                   ),

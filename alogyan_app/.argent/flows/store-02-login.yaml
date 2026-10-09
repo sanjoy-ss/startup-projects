@@ -1,0 +1,13 @@
+steps:
+  - launch: com.alogyan.alogyan_app
+  - await:
+      visible:
+        text: Smart 1-Tap Roster
+  - tap:
+      text: Skip
+  - await:
+      visible:
+        text: Welcome Back!
+  - wait: 1500
+  - await:
+      idle: true

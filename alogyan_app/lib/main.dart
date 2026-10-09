@@ -13,6 +13,7 @@ import 'core/sync/sync_worker.dart';
 import 'features/attendance/data/repositories/attendance_repository.dart';
 import 'features/auth/controllers/auth_controller.dart';
 import 'features/auth/data/auth_repository.dart';
+import 'features/batches/data/repositories/batch_repository.dart';
 import 'features/fees/data/repositories/fee_repository.dart';
 import 'features/onboarding/controllers/onboarding_controller.dart';
 import 'features/students/data/repositories/student_repository.dart';
@@ -67,6 +68,7 @@ void main() async {
 
   // 5. Register Clean Architecture Repositories
   Get.put(StudentRepository(cacheService: cacheService));
+  Get.put(BatchRepository(cacheService: cacheService));
   Get.put(AttendanceRepository(
     cacheService: cacheService,
     syncService: syncService,

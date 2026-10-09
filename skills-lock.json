@@ -85,6 +85,12 @@
       "skillPath": "skills/caveman-stats/SKILL.md",
       "computedHash": "5aba475d0e43a26d7448e6537902e3137beca3024663dfdecf1009cbe16bc299"
     },
+    "goldie": {
+      "source": "kacperkapusciak/goldie",
+      "sourceType": "github",
+      "skillPath": "skills/goldie/SKILL.md",
+      "computedHash": "9caebbdbc68494bbb2d46b06cd6b72f5e309490ea2cc17061bb3ecec6be91626"
+    },
     "investigate-first": {
       "source": "JuliusBrussee/caveman",
       "sourceType": "github",

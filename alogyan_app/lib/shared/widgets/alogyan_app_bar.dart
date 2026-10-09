@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+
 import '../../core/constants/colors.dart';
-import '../../core/sync/sync_worker.dart';
 import '../../features/auth/controllers/auth_controller.dart';
 import '../../features/auth/models/user_model.dart';
-import '../../features/auth/widgets/user_profile_modal.dart';
 import '../../features/navigation/controllers/navigation_controller.dart';
 
 class AlogyanAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -26,7 +25,7 @@ class AlogyanAppBar extends StatelessWidget implements PreferredSizeWidget {
       case 2:
         return 'Quick Fee Collection & Dynamic UPI';
       case 3:
-        return 'Student Directory & Quick Call';
+        return 'Educator Profile & Settings';
       default:
         return 'Alogyan Companion';
     }
@@ -38,40 +37,33 @@ class AlogyanAppBar extends StatelessWidget implements PreferredSizeWidget {
         ? Get.find<NavigationController>()
         : Get.put(NavigationController());
 
-    final syncWorker = Get.isRegistered<SyncWorker>() ? Get.find<SyncWorker>() : null;
-    final authController = Get.isRegistered<AuthController>() ? Get.find<AuthController>() : null;
+    final authController = Get.isRegistered<AuthController>()
+        ? Get.find<AuthController>()
+        : null;
 
     return AppBar(
       toolbarHeight: 64.0,
       elevation: 0,
       backgroundColor: AlogyanColors.surface,
       surfaceTintColor: Colors.transparent,
-      titleSpacing: 16.0,
+      titleSpacing: 0,
       shape: const Border(
         bottom: BorderSide(color: AlogyanColors.border, width: 1.0),
       ),
+      leading: Builder(
+        builder: (context) => IconButton(
+          icon: const Icon(
+            LucideIcons.menu,
+            size: 22,
+            color: AlogyanColors.textPrimary,
+          ),
+          tooltip: 'Open Navigation Drawer',
+          onPressed: () => Scaffold.of(context).openDrawer(),
+        ),
+      ),
       title: Row(
         children: [
-          // Alogyan Brand Badge Icon
-          Container(
-            width: 38,
-            height: 38,
-            decoration: BoxDecoration(
-              color: AlogyanColors.primaryLight,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Center(
-              child: Text(
-                'A',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w900,
-                  color: AlogyanColors.primary,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 4),
           // Dynamic Header Title & Subtitle
           Expanded(
             child: Column(
@@ -97,7 +89,10 @@ class AlogyanAppBar extends StatelessWidget implements PreferredSizeWidget {
                       ),
                       const SizedBox(width: 6),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: AlogyanColors.surfaceMuted,
                           borderRadius: BorderRadius.circular(4),
@@ -135,138 +130,13 @@ class AlogyanAppBar extends StatelessWidget implements PreferredSizeWidget {
         ],
       ),
       actions: [
-        // Educator Profile Avatar Action
-        if (authController != null)
-          Obx(() {
-            final user = authController.currentUser.value;
-            return Padding(
-              padding: const EdgeInsets.only(right: 6.0),
-              child: InkWell(
-                onTap: () => UserProfileModal.show(context),
-                borderRadius: BorderRadius.circular(20),
-                child: Tooltip(
-                  message: '${user?.name ?? "Educator"} (${user?.roleDisplay ?? "Faculty"}) • Tap for Profile & Logout',
-                  child: Container(
-                    width: 34,
-                    height: 34,
-                    decoration: BoxDecoration(
-                      color: AlogyanColors.primaryLight,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: AlogyanColors.primary.withValues(alpha: 0.35),
-                        width: 1.5,
-                      ),
-                    ),
-                    child: Center(
-                      child: Text(
-                        user?.initials ?? 'A',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w800,
-                          color: AlogyanColors.primary,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            );
-          }),
-        // Live Real-Time Cloud Sync Indicator
-        if (syncWorker != null)
-          Obx(() {
-            final isOnline = syncWorker.isOnline.value;
-            final pending = syncWorker.pendingSyncCount.value;
-            final isSyncing = syncWorker.isSyncing.value;
-
-            if (!isOnline) {
-              return Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: Tooltip(
-                  message: 'Offline Mode (Local Cache Active)',
-                  child: InkWell(
-                    onTap: syncWorker.drainQueue,
-                    borderRadius: BorderRadius.circular(20),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: AlogyanColors.warningLight,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: AlogyanColors.warning),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(LucideIcons.cloudOff, size: 14, color: AlogyanColors.warning),
-                          if (pending > 0) ...[
-                            const SizedBox(width: 4),
-                            Text(
-                              '$pending',
-                              style: const TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                                color: AlogyanColors.warning,
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            }
-
-            if (pending > 0 || isSyncing) {
-              return Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: Tooltip(
-                  message: '$pending items syncing to Cloud',
-                  child: InkWell(
-                    onTap: syncWorker.drainQueue,
-                    borderRadius: BorderRadius.circular(20),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: AlogyanColors.infoLight,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const SizedBox(
-                            width: 12,
-                            height: 12,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: AlogyanColors.info),
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '$pending',
-                            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AlogyanColors.info),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            }
-
-            return Padding(
-              padding: const EdgeInsets.only(right: 4.0),
-              child: Tooltip(
-                message: 'All changes synced with Cloud Firestore',
-                child: IconButton(
-                  icon: const Icon(LucideIcons.cloudCheck, size: 20, color: AlogyanColors.success),
-                  onPressed: syncWorker.drainQueue,
-                ),
-              ),
-            );
-          }),
-
         // Notifications action
         IconButton(
-          icon: const Icon(LucideIcons.bell, size: 20, color: AlogyanColors.textPrimary),
+          icon: const Icon(
+            LucideIcons.bell,
+            size: 20,
+            color: AlogyanColors.textPrimary,
+          ),
           tooltip: 'Announcements & Alerts',
           onPressed: () {
             Get.snackbar(

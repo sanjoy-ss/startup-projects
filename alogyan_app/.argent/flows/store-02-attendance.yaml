@@ -1,0 +1,13 @@
+steps:
+  - launch: com.alogyan.alogyan_app
+  - await:
+      visible:
+        text: Classroom Overview
+  - tap:
+      text: Attendance
+  - await:
+      visible:
+        text: Class 10 - Physics Batch
+  - wait: 1500
+  - await:
+      idle: true

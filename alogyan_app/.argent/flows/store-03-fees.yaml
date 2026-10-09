@@ -1,0 +1,13 @@
+steps:
+  - launch: com.alogyan.alogyan_app
+  - await:
+      visible:
+        text: Classroom Overview
+  - tap:
+      text: Fees
+  - await:
+      visible:
+        text: Quick Fee Collection
+  - wait: 1500
+  - await:
+      idle: true

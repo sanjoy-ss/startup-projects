@@ -1,0 +1,13 @@
+steps:
+  - launch: com.alogyan.alogyan_app
+  - await:
+      visible:
+        text: Classroom Overview
+  - tap:
+      text: Students
+  - await:
+      visible:
+        text: Student Directory
+  - wait: 1500
+  - await:
+      idle: true

@@ -1,0 +1,13 @@
+executionPrerequisite: >-
+  App on the quick fee collection screen.
+steps:
+  - await:
+      visible:
+        text: Quick Fee Collection
+  - wait: 1500
+  - tap:
+      text: Students
+  - await:
+      visible:
+        text: Student Directory
+  - wait: 2000

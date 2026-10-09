@@ -305,7 +305,36 @@ class AuthController extends GetxController {
     }
   }
 
-  // 5. Sign Out
+  // 6. Update Profile
+  Future<void> updateProfile({
+    required String name,
+    required String phone,
+    required String designation,
+    required String subject,
+  }) async {
+    final user = currentUser.value;
+    if (user == null) return;
+
+    final updated = user.copyWith(
+      name: name.trim(),
+      phone: phone.trim(),
+      designation: designation.trim(),
+      subject: subject.trim(),
+    );
+
+    await authRepository.updateUserProfile(updated);
+    currentUser.value = updated;
+
+    if (Get.context != null) {
+      Get.snackbar(
+        'Profile Updated',
+        'Educator profile details have been saved.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
+
+  // 7. Sign Out
   Future<void> signOut() async {
     try {
       isLoading.value = true;

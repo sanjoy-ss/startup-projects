@@ -1,0 +1,28 @@
+steps:
+  - launch: com.alogyan.alogyan_app
+  - await:
+      visible:
+        text: Smart 1-Tap Roster
+  - tap:
+      text: Skip
+  - await:
+      visible:
+        text: Welcome Back!
+  - tap:
+      text: Explore with Demo Account
+  - await:
+      visible:
+        text: Demo Educator Accounts
+  - tap:
+      text: Dr. Sanjoy Sarkar
+  - await:
+      visible:
+        text: Classroom Overview
+  - tap:
+      text: Collect Fee
+  - await:
+      visible:
+        text: Quick Fee Collection
+  - wait: 1500
+  - await:
+      idle: true

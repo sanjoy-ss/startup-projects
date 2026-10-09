@@ -45,6 +45,17 @@ class AuthRepository {
     await cacheService.saveUser(user.toMap());
   }
 
+  Future<void> updateUserProfile(UserModel user) async {
+    await saveUserToCache(user);
+    try {
+      if (user.uid.isNotEmpty) {
+        await _firestore.collection('users').doc(user.uid).update(user.toMap());
+      }
+    } catch (e) {
+      debugPrint('Firestore profile update notice: $e');
+    }
+  }
+
   Future<void> clearUserCache() async {
     await cacheService.clearUser();
   }

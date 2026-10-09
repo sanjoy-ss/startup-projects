@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -28,10 +25,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -51,13 +45,31 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyB8AptPazF6c06fKLeoH6zfGrHQAJvu-Nw',
-    appId: '1:62405982079:android:937b34e14da13661038c4a',
+    appId: '1:62405982079:android:c0aea82113e63f5e038c4a',
     messagingSenderId: '62405982079',
     projectId: 'alogyan-3aeac',
     storageBucket: 'alogyan-3aeac.firebasestorage.app',
   );
-
   static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyDP-5E_KoytloFS1GZNA6JpfrfdvlEXcbE',
+    appId: '1:62405982079:ios:ab4b9c980ac84de1038c4a',
+    messagingSenderId: '62405982079',
+    projectId: 'alogyan-3aeac',
+    storageBucket: 'alogyan-3aeac.firebasestorage.app',
+    iosClientId: '62405982079-rubp3pq99haetut8vp7pjbsnnfcjl28i.apps.googleusercontent.com',
+    iosBundleId: 'com.alogyan.alogyanApp',
+  );
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyCWnKg-CB1AXRaYAnsjU0yIOD-Mc_1xKFY',
+    appId: '1:62405982079:web:41d6e04a34ca1ff8038c4a',
+    messagingSenderId: '62405982079',
+    projectId: 'alogyan-3aeac',
+    authDomain: 'alogyan-3aeac.firebaseapp.com',
+    storageBucket: 'alogyan-3aeac.firebasestorage.app',
+    measurementId: 'G-3T4ZF6M6GD',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyDP-5E_KoytloFS1GZNA6JpfrfdvlEXcbE',
     appId: '1:62405982079:ios:ab4b9c980ac84de1038c4a',
     messagingSenderId: '62405982079',
