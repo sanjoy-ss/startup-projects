@@ -1,6 +1,6 @@
 # Meeting Providers & Google Calendar Preview Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Implement Google Meet, Zoom, and extensible Custom meeting provider configurations with default selection, Google Calendar access, an interactive calendar preview section, and batch scheduling integration in Alogyan Teacher CMS.
 
@@ -34,7 +34,7 @@
   - `CalendarPreviewItem`
   - `Batch.meetingProvider?: string`
 
-- [ ] **Step 1: Add Meeting Provider & Calendar Preview Types**
+- [x] **Step 1: Add Meeting Provider & Calendar Preview Types**
 Add the following interfaces to `types/index.ts`:
 
 ```typescript
@@ -101,14 +101,14 @@ export interface CalendarPreviewItem {
 }
 ```
 
-- [ ] **Step 2: Update Batch interface in `types/index.ts`**
+- [x] **Step 2: Update Batch interface in `types/index.ts`**
 In `types/index.ts`, add `meetingProvider?: string;` to the `Batch` interface alongside `meetingLink`.
 
-- [ ] **Step 3: Run TypeScript verification**
+- [x] **Step 3: Run TypeScript verification**
 Run: `npx tsc --noEmit`
 Expected: PASS with 0 errors.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 ```bash
 git add types/index.ts
 git commit -m "feat(types): add meeting provider and calendar preview types"
@@ -129,7 +129,7 @@ git commit -m "feat(types): add meeting provider and calendar preview types"
   - `saveTeacherMeetingSettings(teacherId: string, settings: Partial<TeacherMeetingSettings>): Promise<TeacherMeetingSettings>`
   - `validateMeetingSettings(input: unknown): { isValid: boolean; error?: string; cleanSettings?: TeacherMeetingSettings }`
 
-- [ ] **Step 1: Implement `lib/meeting-providers.ts`**
+- [x] **Step 1: Implement `lib/meeting-providers.ts`**
 Create `lib/meeting-providers.ts`:
 ```typescript
 import 'server-only';
@@ -242,11 +242,11 @@ export async function saveTeacherMeetingSettings(
 }
 ```
 
-- [ ] **Step 2: Run TypeScript verification**
+- [x] **Step 2: Run TypeScript verification**
 Run: `npx tsc --noEmit`
 Expected: PASS with 0 errors.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 ```bash
 git add lib/meeting-providers.ts
 git commit -m "feat(meetings): add server meeting provider utilities and Firestore persistence"
@@ -265,7 +265,7 @@ git commit -m "feat(meetings): add server meeting provider utilities and Firesto
   - `GET /api/settings/meetings`: returns `{ settings, googleCalendar: { connected, email, calendarId } }`
   - `PUT /api/settings/meetings`: updates meeting settings
 
-- [ ] **Step 1: Implement `app/api/settings/meetings/route.ts`**
+- [x] **Step 1: Implement `app/api/settings/meetings/route.ts`**
 ```typescript
 import { NextRequest } from 'next/server';
 import { verifyOwnerTenant } from '@/lib/platform/owner';
@@ -312,11 +312,11 @@ export async function PUT(req: NextRequest) {
 }
 ```
 
-- [ ] **Step 2: Run TypeScript verification**
+- [x] **Step 2: Run TypeScript verification**
 Run: `npx tsc --noEmit`
 Expected: PASS with 0 errors.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 ```bash
 git add app/api/settings/meetings/route.ts
 git commit -m "feat(api): add meeting settings GET and PUT API route"
@@ -334,7 +334,7 @@ git commit -m "feat(api): add meeting settings GET and PUT API route"
 - Produces:
   - `GET /api/settings/meetings/calendar-preview`: returns `{ events: CalendarPreviewItem[] }`
 
-- [ ] **Step 1: Implement Calendar Preview route**
+- [x] **Step 1: Implement Calendar Preview route**
 Create `app/api/settings/meetings/calendar-preview/route.ts`:
 Calculate end times from `startTime` and `durationMins`. Read the batch's `meetingProvider` (defaulting to Google Meet or Custom), `meetingLink`, and query the `calendarEvents` subcollection for synced Google Calendar links.
 
@@ -433,11 +433,11 @@ export async function GET(req: NextRequest) {
 }
 ```
 
-- [ ] **Step 2: Run TypeScript verification**
+- [x] **Step 2: Run TypeScript verification**
 Run: `npx tsc --noEmit`
 Expected: PASS with 0 errors.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 ```bash
 git add app/api/settings/meetings/calendar-preview/route.ts
 git commit -m "feat(api): add calendar preview API route"
@@ -459,7 +459,7 @@ git commit -m "feat(api): add calendar preview API route"
   - Custom Providers card (list, "+ Add Custom Provider" dialog, active toggle, delete)
   - "Set as Default" button for each active provider
 
-- [ ] **Step 1: Implement `MeetingProvidersCard.tsx`**
+- [x] **Step 1: Implement `MeetingProvidersCard.tsx`**
 Create `components/settings/MeetingProvidersCard.tsx` with full accessible forms, responsive layout, dark mode styles, and toast notifications.
 Include:
 - State management for `TeacherMeetingSettings` and `GoogleStatus`.
@@ -467,11 +467,11 @@ Include:
 - Modal/form for adding custom providers.
 - Quick test link buttons that open meeting URLs safely.
 
-- [ ] **Step 2: Run TypeScript verification**
+- [x] **Step 2: Run TypeScript verification**
 Run: `npx tsc --noEmit`
 Expected: PASS with 0 errors.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 ```bash
 git add components/settings/MeetingProvidersCard.tsx
 git commit -m "feat(ui): add MeetingProvidersCard component"
@@ -493,14 +493,14 @@ git commit -m "feat(ui): add MeetingProvidersCard component"
   - Google Calendar sync badge (with clickable Google Calendar URL)
   - Student attendee count
 
-- [ ] **Step 1: Implement `CalendarPreview.tsx`**
+- [x] **Step 1: Implement `CalendarPreview.tsx`**
 Create `components/calendar/CalendarPreview.tsx` with clean responsive cards, empty states, day filters, and link actions with toast notifications.
 
-- [ ] **Step 2: Run TypeScript verification**
+- [x] **Step 2: Run TypeScript verification**
 Run: `npx tsc --noEmit`
 Expected: PASS with 0 errors.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 ```bash
 git add components/calendar/CalendarPreview.tsx
 git commit -m "feat(ui): add CalendarPreview component"
@@ -517,7 +517,7 @@ git commit -m "feat(ui): add CalendarPreview component"
 - Consumes: `MeetingProvidersCard`, `CalendarPreview`
 - Produces: Upgraded `IntegrationsTab` rendering both `MeetingProvidersCard` and `CalendarPreview` side-by-side or stacked cleanly.
 
-- [ ] **Step 1: Replace old Google-only card with `MeetingProvidersCard` and `CalendarPreview`**
+- [x] **Step 1: Replace old Google-only card with `MeetingProvidersCard` and `CalendarPreview`**
 Update `IntegrationsTab` in `app/(dashboard)/settings/page.tsx` to render:
 ```tsx
 function IntegrationsTab({ showToast }: { showToast: (m: string, ok?: boolean) => void }) {
@@ -535,11 +535,11 @@ function IntegrationsTab({ showToast }: { showToast: (m: string, ok?: boolean) =
 }
 ```
 
-- [ ] **Step 2: Run TypeScript verification**
+- [x] **Step 2: Run TypeScript verification**
 Run: `npx tsc --noEmit`
 Expected: PASS with 0 errors.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 ```bash
 git add app/(dashboard)/settings/page.tsx
 git commit -m "feat(settings): integrate MeetingProvidersCard and CalendarPreview in Settings"
@@ -561,7 +561,7 @@ git commit -m "feat(settings): integrate MeetingProvidersCard and CalendarPrevie
   - Auto-fills meeting link based on selected provider.
   - Automatically persists `meetingProvider` in Firestore batch document.
 
-- [ ] **Step 1: Update `BatchForm.tsx`**
+- [x] **Step 1: Update `BatchForm.tsx`**
 In `BatchForm.tsx`:
 - Fetch meeting settings on load.
 - In `form` state, add `meetingProvider: batch?.meetingProvider || ''`.
@@ -572,16 +572,16 @@ In `BatchForm.tsx`:
   - For Google Meet: show Google Calendar auto-sync toggle.
   - Teachers can edit the `meetingLink` input anytime.
 
-- [ ] **Step 2: Update `app/api/batches/route.ts` and `app/api/batches/[id]/route.ts`**
+- [x] **Step 2: Update `app/api/batches/route.ts` and `app/api/batches/[id]/route.ts`**
 Ensure `meetingProvider` is accepted and persisted:
 - In `app/api/batches/route.ts`: add `meetingProvider: text(body.meetingProvider, 60),` to the document creation payload.
 - In `app/api/batches/[id]/route.ts`: add `'meetingProvider'` to the allowed update fields.
 
-- [ ] **Step 3: Run TypeScript verification**
+- [x] **Step 3: Run TypeScript verification**
 Run: `npx tsc --noEmit`
 Expected: PASS with 0 errors.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 ```bash
 git add components/batches/BatchForm.tsx app/api/batches/route.ts app/api/batches/[id]/route.ts
 git commit -m "feat(batches): add meeting provider selector and auto-fill in batch form"
@@ -591,11 +591,11 @@ git commit -m "feat(batches): add meeting provider selector and auto-fill in bat
 
 ### Task 9: End-to-End Verification & Sanity Checks
 
-- [ ] **Step 1: Run TypeScript compiler check**
+- [x] **Step 1: Run TypeScript compiler check**
 Run: `npx tsc --noEmit`
 Expected: PASS with 0 errors.
 
-- [ ] **Step 2: Verify in Next.js build or browser**
+- [x] **Step 2: Verify in Next.js build or browser**
 Check Settings Integrations tab and Batch creation form to ensure:
 1. Google Meet, Zoom, and Custom provider options render smoothly.
 2. Setting default provider updates seamlessly.
@@ -603,7 +603,7 @@ Check Settings Integrations tab and Batch creation form to ensure:
 4. Calendar preview loads upcoming batches and displays provider badges and links.
 5. Batch form pre-selects default provider and auto-populates link.
 
-- [ ] **Step 3: Final Commit**
+- [x] **Step 3: Final Commit**
 ```bash
 git commit --allow-empty -m "chore: complete meeting providers and calendar preview verification"
 ```
